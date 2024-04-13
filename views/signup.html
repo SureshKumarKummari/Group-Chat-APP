@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup/Login Page with Tailwind CSS</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- <style>
+        .form-container {
+            display: none;
+        }
+    </style> -->
+</head>
+
+<body class="bg-green-300 items-center h-screen" >
+    <br><br>
+    <div class="max-w-lg mx-auto p-8 bg-white rounded shadow">
+        <div id="signup-form" class="form-container">
+            <h2 class="text-2xl font-bold mb-4">Signup</h2>
+            <form id="signup-form" class="mb-4" onsubmit="handleSignup(event)">
+                <label class="block mb-2" for="username">Username:</label>
+                <input type="text" id="username" name="username" class="w-full px-3 py-2 border rounded-md" required>
+                <br>
+                <label class="block mb-2" for="email">Email :</label>
+                <input type="email" id="email" name="email" class="w-full px-3 py-2 border rounded-md" required>
+                <br>
+                <label class="block mb-2 mt-4" for="phone">Phone Number:</label>
+                <input type="number" min=6000000000 max=9999999999 id="phone" name="phone" class="w-full px-3 py-2 border rounded-md" required>
+                <br>
+                <label class="block mb-2 mt-4" for="password">Password:</label>
+                <div class="password-container" style="position: relative;">
+                    <input type="password" id="password" name="password" class="w-full px-3 py-2 border rounded-md" required>
+                    <button id="showPasswordButton"
+                        style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">Show</button>
+                </div>
+                <br>
+                <button type="submit" 
+                    class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Signup</button>
+            </form>
+            <div>Already have an account? 
+            <button onclick="showForm('login-form')" class="text-blue-500 hover:underline"> Login</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    document.getElementById("showPasswordButton").addEventListener("click", function () {
+            var passwordField = document.getElementById("password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                this.textContent = "Hide";
+            } else {
+                passwordField.type = "password";
+                this.textContent = "Show";
+            }
+        });
+
+</script>
+</html>
