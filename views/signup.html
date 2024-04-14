@@ -73,10 +73,12 @@
                     .then(response => {
                         console.log('Signup successful:');
                         p.innerText=`Signup Successful!`;
+                        alert('Signup Successful')
                     })
                     .catch(error => {
                         p.innerText=`User already exists with given data!`;
                         console.log('Signup unsuccessful:');
+                        alert('Signup unsuccessful ! user already exisis!');
                     });
                     form.appendChild(p);
                     setTimeout(()=>{
