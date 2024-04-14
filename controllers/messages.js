@@ -1,4 +1,5 @@
 const messagemodel = require('../models/messages');
+const Sequelize=require('sequelize');
 
 exports.postMessage = async (req, res, next) => {
     try {
@@ -17,8 +18,18 @@ exports.postMessage = async (req, res, next) => {
 
 exports.getMessages=async(req,res,next)=>{
     try {
-        const result = await messagemodel.findAll();
-        res.status(200).json(result);
+        let result;
+        if(req.query.idisgreater){
+            console.log(req.query.idisgreater);
+            result = await messagemodel.findAll({ where: { userId: { [Sequelize.Op.gt]: req.query.idisgreater } } });
+        }else{
+            result = await messagemodel.findAll();
+        }
+        if(result){
+                res.status(200).json(result);
+        }else{
+            throw err;
+        }
     } catch (err) {
         console.error(err);
         res.status(401).json({ message: "Can't send message" });

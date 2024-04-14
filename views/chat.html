@@ -55,34 +55,53 @@ background-color: gray;
                 console.log("Can't send Message!");
             })
         }
-
-        /*window.onload=function(){
-            axios.get('http://localhost:4000/getMessages', { headers: { "Autherization": localStorage.getItem('token') } })
-                .then((res) => {
-                    document.getElementById("messages").innerHTML="";
-                    for(let i=0;i<res.data.length;i++){
-                    addMessage(res.data[i].message);
-                    }
-                }).catch((err) => {
-                    console.log("Can't send Message!");
-                })
-        }*/
+        var p=0;
         window.onload = function () {
-                function fetchMessages() {
+                //function fetchMessages() {
+                    if(p===0){
                     axios.get('http://localhost:4000/getMessages', { headers: { "Autherization": localStorage.getItem('token') }})
                         .then((res) => {
                             // Clear existing messages
                             document.getElementById("messages").innerHTML = "";
                             // Add new messages to the screen
+                            let data=[];
                             for (let i = 0; i < res.data.length; i++) {
                                 addMessage(res.data[i].message);
+                                data.push([res.data[i].message,res.data[i].id]);
+                                if(data.length>10){
+                                    data.shift();
+                                }
                             }
+                            localStorage.setItem('chats',data);
+                            p=data[data.length-1][1];
                         })
                         .catch((err) => {
                             console.log("Can't fetch messages:", err);
                         });
-                }
-                setInterval(fetchMessages, 1000);
+                    }else{
+                        axios.get(`http://localhost:4000/getMessages/?idisgreater=${p}`, { headers: { "Autherization": localStorage.getItem('token') } })
+                            .then((res) => {
+                                // Clear existing messages
+                                document.getElementById("messages").innerHTML = "";
+                                // Add new messages to the screen
+                                let data = localStorage.getItem('chats');
+                                for (let i = 0; i < res.data.length; i++) {
+                                    addMessage(res.data[i].message);
+                                    data.push([res.data[i].message, res.data[i].id]);
+                                    if (data.length > 10) {
+                                        data.shift();
+                                    }
+                                }
+                                localStorage.setItem('chats', data);
+                                p = data[data.length - 1][1];
+                            })
+                            .catch((err) => {
+                                console.log("Can't fetch messages:", err);
+                            });
+
+                    }
+                //}
+               // setInterval(fetchMessages, 1000);
             }
 
 
