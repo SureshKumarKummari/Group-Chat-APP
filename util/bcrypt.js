@@ -12,3 +12,15 @@ exports.decrypt=async(pass)=>{
     }
 
 }
+
+
+
+exports.checkpass=async(password,pass)=>{
+    try {
+        //console.log(password,pass);
+        const passwordMatch = await bcrypt.compare(password, pass);
+        return passwordMatch;
+    } catch (error) {
+        throw new Error('Error checking password');
+    }
+}

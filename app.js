@@ -20,7 +20,7 @@ app.use(admin);
 
 const port=process.env.PORT || 3000;
 
-sequelize.sync({force:true}).then(()=>{
+sequelize.sync().then(()=>{
     app.listen(port,console.log(`Group Chat App listening on ${port}`));
 }).catch(err=>{
     console.log(err);

@@ -28,3 +28,24 @@ exports.signup=async(req,res,next)=>{
     }
 
 }
+
+
+
+exports.login = async (req, res, next) => {
+    try {
+        const user = await users.findOne({ where: { email: req.params.email } });
+        if (user) {
+            const result = await bcrypt.checkpass(req.params.password, user.password);
+            if (result) {
+                res.status(200).send("User logged in Successfully!");
+            } else {
+                throw new Error("Invalid user credentials!");
+            }
+        } else {
+            throw new Error("Invalid user credentials!");
+        }
+    } catch (err) {
+        console.log("invalid");
+        res.status(404).json({ error: "Invalid Credentials!" });
+    }
+};
