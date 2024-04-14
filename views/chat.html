@@ -48,16 +48,22 @@ background-color: gray;
 
     function handleFormSubmit(event) {
             event.preventDefault();
-            let t = document.getElementById("messages");
-            let tr = document.createElement('tr');
-            let td = document.createElement('td');
-            td.textContent = `${event.target.message.value}`;
-            tr.appendChild(td);
-            tr.classList.add('form-control');
-            t.appendChild(tr);
+            axios.post('http://localhost:4000/sendmessage',{ message: event.target.message.value }, { headers: { "Autherization": localStorage.getItem('token')}})
+            .then((res)=>{
+                let t = document.getElementById("messages");
+                let tr = document.createElement('tr');
+                let td = document.createElement('td');
+                td.textContent = `${event.target.message.value}`;
+                tr.appendChild(td);
+                tr.classList.add('form-control');
+                t.appendChild(tr);
+            }).catch((err)=>{
+                console.log("Can't send Message!");
+            })
         }
 
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js">
+</script>
 
 </html>

@@ -7,7 +7,6 @@ const bcrypt=require('../util/bcrypt');
 
 exports.signup=async(req,res,next)=>{
     try{
-        console.log(req.body);
    const user=await users.findOne({ where: { email: req.body.email } })
     if (!user) {
          bcrypt.decrypt(req.body.password)
@@ -39,10 +38,7 @@ exports.login = async (req, res, next) => {
         if (user) {
             const result = await bcrypt.checkpass(req.params.password, user.password);
             if (result) {
-                res
-                .status(200)
-                .json({
-                  token: userauth.token(user.id)
+                res.status(200).json({token: userauth.token(user.id)
                 });
                // res.status(200).send("User logged in Successfully!");
             } else {
