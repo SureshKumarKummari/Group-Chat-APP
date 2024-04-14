@@ -1,0 +1,27 @@
+const express=require('express');
+
+const body_parser=require('body-parser');
+
+const cors=require('cors');
+
+const sequelize=require('./util/database');
+
+require('dotenv').config();
+//routers 
+const admin=require('./routes/admin');
+
+const app=express();
+
+app.use(cors());
+
+app.use(body_parser.json());
+
+app.use(admin);
+
+const port=process.env.PORT || 3000;
+
+sequelize.sync({force:true}).then(()=>{
+    app.listen(port,console.log(`Group Chat App listening on ${port}`));
+}).catch(err=>{
+    console.log(err);
+})

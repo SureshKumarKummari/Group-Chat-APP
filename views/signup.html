@@ -16,7 +16,7 @@
 <body class="bg-green-300 items-center h-screen" >
     <br><br>
     <div class="max-w-lg mx-auto p-8 bg-white rounded shadow">
-        <div id="signup-form" class="form-container">
+        <div id="signup" class="form-container">
             <h2 class="text-2xl font-bold mb-4">Signup</h2>
             <form id="signup-form" class="mb-4" onsubmit="handleSignup(event)">
                 <label class="block mb-2" for="username">Username:</label>
@@ -57,5 +57,35 @@
             }
         });
 
+
+        function handleSignup(event) {
+                event.preventDefault();
+                const formData = {
+                    username: document.getElementById('username').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    password: document.getElementById('password').value,
+                };
+                let form = document.getElementById('signup');
+                let p=document.createElement('p');
+                p.style.color="red";
+                axios.post('http://localhost:4000/signup', formData)
+                    .then(response => {
+                        console.log('Signup successful:');
+                        p.innerText=`Signup Successful!`;
+                    })
+                    .catch(error => {
+                        p.innerText=`User already exists with given data!`;
+                        console.log('Signup unsuccessful:');
+                    });
+                    form.appendChild(p);
+                    setTimeout(()=>{
+                        p.remove();
+                    },5000);
+            }
+
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js">
 </script>
 </html>
