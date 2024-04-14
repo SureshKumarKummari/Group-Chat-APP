@@ -50,17 +50,34 @@ background-color: gray;
             event.preventDefault();
             axios.post('http://localhost:4000/sendmessage',{ message: event.target.message.value }, { headers: { "Autherization": localStorage.getItem('token')}})
             .then((res)=>{
-                let t = document.getElementById("messages");
-                let tr = document.createElement('tr');
-                let td = document.createElement('td');
-                td.textContent = `${event.target.message.value}`;
-                tr.appendChild(td);
-                tr.classList.add('form-control');
-                t.appendChild(tr);
+                addMessage(res.data.message);
             }).catch((err)=>{
                 console.log("Can't send Message!");
             })
         }
+
+        window.onload=function(){
+            axios.get('http://localhost:4000/getMessages', { headers: { "Autherization": localStorage.getItem('token') } })
+                .then((res) => {
+                    document.getElementById("messages").innerHTML="";
+                    for(let i=0;i<res.data.length;i++){
+                    addMessage(res.data[i].message);
+                    }
+                }).catch((err) => {
+                    console.log("Can't send Message!");
+                })
+        }
+
+
+            function addMessage(message){
+                let t = document.getElementById("messages");
+                let tr = document.createElement('tr');
+                let td = document.createElement('td');
+                td.textContent = message;
+                tr.appendChild(td);
+                tr.classList.add('form-control');
+                t.appendChild(tr);
+            }
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js">

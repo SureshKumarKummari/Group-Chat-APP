@@ -8,5 +8,6 @@ const message=require('../controllers/messages');
 
 router.post('/sendmessage',authorize.authenticate,message.postMessage);
 
+router.get('/getMessages',authorize.authenticate,message.getMessages);
 
 module.exports=router;
