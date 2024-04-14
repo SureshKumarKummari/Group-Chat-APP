@@ -1,6 +1,8 @@
 const users=require('../models/users');
 
 
+const userauth=require('../middleware/userauthentication');
+
 const bcrypt=require('../util/bcrypt');
 
 exports.signup=async(req,res,next)=>{
@@ -37,7 +39,12 @@ exports.login = async (req, res, next) => {
         if (user) {
             const result = await bcrypt.checkpass(req.params.password, user.password);
             if (result) {
-                res.status(200).send("User logged in Successfully!");
+                res
+                .status(200)
+                .json({
+                  token: userauth.token(user.id)
+                });
+               // res.status(200).send("User logged in Successfully!");
             } else {
                 throw new Error("Invalid user credentials!");
             }
