@@ -5,22 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap CSS -->
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> <!-- Bootstrap  icons -->
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap  icons -->
+
     <link rel="stylesheet" href="./style.css" />
 </head>
 
 <hr>
-<h1 class="s rounded" style="text-align:center;">Welcome To Group Chat
+<h1 class=" rounded" style="text-align:center;">Welcome To Group Chat
 </h1>
 <hr>
+
 <body>
 
     <div class="container-fluid" style="height: 100vh;">
         <div class="row" style="height: 100%;">
 
-            <div id="sidebar" class="col-3 justify-content-start" style="background-color: grey;">
+            <div id="sidebar" class="col-3 justify-content-start rounded" style="background-color: grey;">
                 <div class="sidebar list-group" style="width: 100%;">
                     <ul class="list-group" style="width: 100%;">
                         <hr>
@@ -34,260 +37,214 @@
                                 </div>
                                 <div class="col-2"></div>
                                 <div class="col">
-                                     <h6>User1</h6>
+                                    <h6>User1</h6>
                                     <!-- <h6>Last seen</h6> -->
                                 </div>
                             </button>
                         </li>
-                        <li class="list-group-item" style="overflow:hidden;">
-                            <button class="btn d-flex align-items-center" onclick="handlechat(this)">
-                                <div class="col-2">
-                                    <div class="avatar">
-                                        <img src="https://t3.ftcdn.net/jpg/03/46/83/96/240_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
-                                            alt="avatar">
-                                    </div>
-                                </div>
-                                <div class="col-2"></div>
-                                <div class="col">
-                                    <h6>User2</h6>
-                                    <!-- <h6>Last seen</h6> -->
-                                </div>
-                            </button>
-                        </li>
+
                     </ul>
                 </div>
             </div>
 
-        
+
             <div class="col-8" style="display:none;" id="changecol">
-                     <div class="container">
-                        <div id="header"></div>
-                        <!-- msg-header section starts -->
-                        <!-- <div class="msg-header">
-                            <div class="container1">
-                                <img src="user1.png" class="msgimg" />
-                                <div class="active">
-                                    <p>User name</p>
+                <div class="container">
+                    <div id="header"></div>
+                    <!-- msg-header section starts -->
+                    
+                    <!-- msg-header section ends -->
+
+                    <div class="chat-page">
+                        <div class="msg-inbox">
+                            <div class="chats">
+                                <!-- Message container -->
+                                <div class="msg-page" id="msg-page">
+
+                                    <!-- Outgoing messages -->
+                                    
+
+                                    <!--received chats--> 
                                 </div>
                             </div>
-                        </div> -->
-                        <!-- msg-header section ends -->
-                
-                        <div class="chat-page">
-                            <div class="msg-inbox">
-                                <div class="chats">
-                                    <!-- Message container -->
-                                    <div class="msg-page" id="msg-page">
-                                        
-                                        <!-- Outgoing messages -->
-                                        <div class="outgoing-chats">
-                                            <div class="outgoing-chats-img">
-                                                <img src="user1.png" />
-                                            </div>
-                                            <div class="outgoing-msg">
-                                                <div class="outgoing-chats-msg">
-                                                    <p class="multi-msg">
-                                                        Lorem ipsum dolor sit amet consectetur.
-                                                    </p>
-                
-                                                    <span class="time">18:30 PM | July 24</span>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <!-- <div class="received-chats">
-                                            <div class="received-chats-img">
-                                                <img src="user2.png" />
-                                            </div>
-                                            <div class="received-msg">
-                                                <div class="received-msg-inbox">
-                                                    <p class="single-msg">
-                                                        Hi !! This is message from John Lewis. Lorem ipsum, dolor
-                                                        sit amet consectetur adipisicing elit. iste distinctio
-                                                        expedita illo!
-                                                    </p>
-                                                    <span class="time">18:31 PM | July 24</span>
-                                                </div>
-                                            </div>
-                                        </div> -->
-                                    </div>
-                                </div>
-                
-                                <!-- msg-bottom section -->
-                
-                                <div class="msg-bottom">
-                                    <div class="input-group">
-                                        <input type="text" id="message" class="form-control" placeholder="Type message..." />
-                
-                                        <button class="btn" onclick="handleSubmit()">
-                                            <i class="bi bi-send"></i>
-                                        </button>
-                                    </div>
+                            <!-- msg-bottom section -->
+
+                            <div class="msg-bottom">
+                                <div class="input-group">
+                                    <input type="text" id="message" class="form-control"
+                                        placeholder="Type message..." />
+
+                                    <button class="btn" onclick="handleSubmit()">
+                                        <i class="bi bi-send"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
             </div>
 
         </div>
     </div>
 </body>
-    <script src="../node_modules/socket.io/client-dist/socket.io.js"></script>
+<script src="../node_modules/socket.io/client-dist/socket.io.js"></script>
 <script>
 
 
     function handlechat(buttonElement) {
 
-            let chatwindow = document.getElementById('changecol');
+        let chatwindow = document.getElementById('changecol');
         console.log(chatwindow.style.display);
         if (chatwindow.style.display == 'none') {
             chatwindow.style.display = 'block';
             console.log(chatwindow.style.display);
         }
-            // Access the img and h6 elements inside the button
-            let imgElement = buttonElement.querySelector('div.col-2 div.avatar img');
-            let h6Element = buttonElement.querySelector('div.col h6');
+        // Access the img and h6 elements inside the button
+        let imgElement = buttonElement.querySelector('div.col-2 div.avatar img');
+        let h6Element = buttonElement.querySelector('div.col h6');
 
-            // Access the src attribute of the img element
-            let imageUrl = imgElement.getAttribute('src');
+        // Access the src attribute of the img element
+        let imageUrl = imgElement.getAttribute('src');
 
-            // Access the text content of the h6 element
-            let username = h6Element.textContent;
+        // Access the text content of the h6 element
+        let username = h6Element.textContent;
 
-            console.log("Username:", username);
-            console.log("Image URL:", imageUrl);
-            // Now you can use the username and imageUrl as needed in your function
-            // For example, you can include them in the header HTML
-            let header = document.getElementById('header');
-            header.innerHTML = "";
-            header.innerHTML = `<div class="msg-header">
+        console.log("Username:", username);
+        console.log("Image URL:", imageUrl);
+        // Now you can use the username and imageUrl as needed in your function
+        // For example, you can include them in the header HTML
+        let header = document.getElementById('header');
+        header.innerHTML = "";
+        header.innerHTML = `<div class="msg-header">
         <div class="container1">
             <div class="col-2"></div>
         <img src="${imageUrl}" alt="avatar" class="msgimg"/>
         <div class="active"><p>${username}</p></div></div></div>`;
-        }
+    }
 
 
 
 
-     function addreceivedMessage(message) {
-           
-             let d = document.getElementById('msg-page');
+    function addreceivedMessage(message) {
 
-             // Create the necessary DOM elements
-             let receivedChatsDiv = document.createElement('div');
-             receivedChatsDiv.classList.add('received-chats');
+        let d = document.getElementById('msg-page');
 
-             let receivedChatsImgDiv = document.createElement('div');
-             receivedChatsImgDiv.classList.add('received-chats-img');
+        // Create the necessary DOM elements
+        let receivedChatsDiv = document.createElement('div');
+        receivedChatsDiv.classList.add('received-chats');
 
-             let img = document.createElement('img');
-             img.setAttribute('src', 'user2.png');
+        let receivedChatsImgDiv = document.createElement('div');
+        receivedChatsImgDiv.classList.add('received-chats-img');
 
-             let receivedMsgDiv = document.createElement('div');
-             receivedMsgDiv.classList.add('received-msg');
+        let img = document.createElement('img');
+        img.setAttribute('src', 'user2.png');
 
-             let receivedMsgInboxDiv = document.createElement('div');
-             receivedMsgInboxDiv.classList.add('received-msg-inbox');
+        let receivedMsgDiv = document.createElement('div');
+        receivedMsgDiv.classList.add('received-msg');
 
-             let p = document.createElement('p');
-             p.classList.add('single-msg');
-             p.textContent = message;
+        let receivedMsgInboxDiv = document.createElement('div');
+        receivedMsgInboxDiv.classList.add('received-msg-inbox');
 
-             let span = document.createElement('span');
-             span.classList.add('time');
-             span.textContent = '18:31 PM | July 24';
+        let p = document.createElement('p');
+        p.classList.add('single-msg');
+        p.textContent = message;
 
-             // Append the elements to the appropriate parent elements
-             receivedMsgInboxDiv.appendChild(p);
-             receivedMsgInboxDiv.appendChild(span);
+        let span = document.createElement('span');
+        span.classList.add('time');
+        span.textContent = '18:31 PM | July 24';
 
-             receivedMsgDiv.appendChild(receivedMsgInboxDiv);
+        // Append the elements to the appropriate parent elements
+        receivedMsgInboxDiv.appendChild(p);
+        receivedMsgInboxDiv.appendChild(span);
 
-             receivedChatsImgDiv.appendChild(img);
+        receivedMsgDiv.appendChild(receivedMsgInboxDiv);
 
-             receivedChatsDiv.appendChild(receivedChatsImgDiv);
-             receivedChatsDiv.appendChild(receivedMsgDiv);
+        receivedChatsImgDiv.appendChild(img);
 
-             // Append the whole structure to the target element
-             d.appendChild(receivedChatsDiv);
+        receivedChatsDiv.appendChild(receivedChatsImgDiv);
+        receivedChatsDiv.appendChild(receivedMsgDiv);
 
-        }
+        // Append the whole structure to the target element
+        d.appendChild(receivedChatsDiv);
 
-
-    function addSentMessage(message){
-            let d = document.getElementById('msg-page');
-
-            // Create the necessary DOM elements
-            let outgoingChatsDiv = document.createElement('div');
-            outgoingChatsDiv.classList.add('outgoing-chats');
-
-            let outgoingChatsImgDiv = document.createElement('div');
-            outgoingChatsImgDiv.classList.add('outgoing-chats-img');
-
-            let img = document.createElement('img');
-            img.setAttribute('src', 'user1.png');
-
-            let outgoingMsgDiv = document.createElement('div');
-            outgoingMsgDiv.classList.add('outgoing-msg');
-
-            let outgoingMsgInboxDiv = document.createElement('div');
-            outgoingMsgInboxDiv.classList.add('outgoing-chats-msg');
-
-            let p = document.createElement('p');
-            p.classList.add('multi-msg');
-            p.textContent = message;
-
-            let span = document.createElement('span');
-            span.classList.add('time');
-            span.textContent = '18:30 PM | July 24';
-
-            // Append the elements to the appropriate parent elements
-            outgoingMsgInboxDiv.appendChild(p);
-            outgoingMsgInboxDiv.appendChild(span);
-
-            outgoingMsgDiv.appendChild(outgoingMsgInboxDiv);
-
-            outgoingChatsImgDiv.appendChild(img);
-
-            outgoingChatsDiv.appendChild(outgoingChatsImgDiv);
-            outgoingChatsDiv.appendChild(outgoingMsgDiv);
-
-            // Append the whole structure to the target element
-            d.appendChild(outgoingChatsDiv);
+    }
 
 
-        }
+    function addSentMessage(message) {
+        let d = document.getElementById('msg-page');
+
+        // Create the necessary DOM elements
+        let outgoingChatsDiv = document.createElement('div');
+        outgoingChatsDiv.classList.add('outgoing-chats');
+
+        let outgoingChatsImgDiv = document.createElement('div');
+        outgoingChatsImgDiv.classList.add('outgoing-chats-img');
+
+        let img = document.createElement('img');
+        img.setAttribute('src', 'user1.png');
+
+        let outgoingMsgDiv = document.createElement('div');
+        outgoingMsgDiv.classList.add('outgoing-msg');
+
+        let outgoingMsgInboxDiv = document.createElement('div');
+        outgoingMsgInboxDiv.classList.add('outgoing-chats-msg');
+
+        let p = document.createElement('p');
+        p.classList.add('multi-msg');
+        p.textContent = message;
+
+        let span = document.createElement('span');
+        span.classList.add('time');
+        span.textContent = '18:30 PM | July 24';
+
+        // Append the elements to the appropriate parent elements
+        outgoingMsgInboxDiv.appendChild(p);
+        outgoingMsgInboxDiv.appendChild(span);
+
+        outgoingMsgDiv.appendChild(outgoingMsgInboxDiv);
+
+        outgoingChatsImgDiv.appendChild(img);
+
+        outgoingChatsDiv.appendChild(outgoingChatsImgDiv);
+        outgoingChatsDiv.appendChild(outgoingMsgDiv);
+
+        // Append the whole structure to the target element
+        d.appendChild(outgoingChatsDiv);
 
 
-        const socket = io('http://localhost:4000');
-
-        function handleSubmit(){
-                const message = document.getElementById('message').value;
-                console.log(message);
-                socket.emit('message',message);
-                addSentMessage(message);
-            }
-
-                socket.on('message', (data) => {
-                    console.log('Received message:', data);
-                    addreceivedMessage(data);
-                });
+    }
 
 
-                const messageInput = document.getElementById('message');
-                let typingTimeout;
+    const socket = io('http://localhost:4000');
 
-                messageInput.addEventListener('input', () => {
-                    clearTimeout(typingTimeout);
-                    socket.emit('typing');
-                    typingTimeout = setTimeout(() => {
-                        socket.emit('stop typing');
-                    }, 1000);
-                });
+    function handleSubmit() {
+        const message = document.getElementById('message').value;
+        console.log(message);
+        socket.emit('message', message);
+        addSentMessage(message);
+    }
+
+    socket.on('message', (data) => {
+        console.log('Received message:', data);
+        addreceivedMessage(data);
+    });
+
+
+    const messageInput = document.getElementById('message');
+    let typingTimeout;
+
+    messageInput.addEventListener('input', () => {
+        clearTimeout(typingTimeout);
+        socket.emit('typing');
+        typingTimeout = setTimeout(() => {
+            socket.emit('stop typing');
+        }, 1000);
+    });
 
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js">
 </script>
+
 </html>
