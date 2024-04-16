@@ -23,6 +23,7 @@
     "express": "^4.19.2",
     "express-handlebars": "^3.0.0",
     "helmet": "^7.1.0",
+    "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.9.3",
@@ -30,6 +31,7 @@
     "razorpay": "^2.9.2",
     "sequelize": "^6.37.2",
     "sib-api-v3-sdk": "^8.5.0",
+    "socket.io": "^4.7.5",
     "uuid": "^9.0.1"
   }
 }

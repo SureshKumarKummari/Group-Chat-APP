@@ -1,17 +1,25 @@
-const Sequelize=require("sequelize");
+const Sequelize = require("sequelize");
+const sequelize = require("../util/database");
+const Group = require("./groups");
 
-const sequelize=require("../util/database");
-
-const message=sequelize.define('messages',{
-    id:{
-        autoIncrement:true,
-        type:Sequelize.INTEGER,
-        allowNull:false,
-        primaryKey:true,
+const Message = sequelize.define('messages', {
+    message_id: {
+        autoIncrement: true,
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
     },
-    userId:Sequelize.INTEGER,
-    message:Sequelize.STRING,
-})
+    user_id: Sequelize.INTEGER,
+    message: Sequelize.STRING,
+    group_id: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+         /*references: {
+             model: Group,
+             key: 'group_id'
+         }*/
+    }
+});
 
+module.exports = Message;
 
-module.exports=message;

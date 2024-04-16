@@ -91,15 +91,9 @@
                 p.style.color="red";
                 axios.post('http://localhost:4000/signup', formData)
                     .then(response => {
-                       // console.log('Signup successful:');
-                        //p.innerText=`Signup Successful!`;
-                        //alert('Signup Successful')
                         displayalert("Signup Successful",document.getElementById('signup-form'));
                     })
                     .catch(error => {
-                        //p.innerText=`User already exists with given data!`;
-                        //console.log('Signup unsuccessful:');
-                        //alert('Signup unsuccessful ! user already exisis!');
                         displayalert("Signup unsuccessful", document.getElementById('signup-form'));
                     });
             }
@@ -137,6 +131,7 @@
 
 
                     function showForm(formId) {
+                        localStorage.clear();
                         const forms = document.querySelectorAll('.form-container');
                             forms.forEach(form => {
                             if (form.id === formId) {
