@@ -1,30 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-/*our code*/
-#messages tr:nth-child(odd) {
-    background-color: #f2f2f2;
-}
-
-#messages tr:nth-child(even) {
-    background-color: gray;
-}
-
+/*our code
 .s {
     border: 1px solid #ccc;
     margin: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-}
+    box-shadow: 0 0 5px rgba(0, 0, 0, 1);
+}*/
 
-.footer {
-    margin-top: auto;
-}
 
 .avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
     overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    /* box-shadow: 0 0 5px rgba(0, 255, 0, 0.5); */
 }
 
 .avatar img {
@@ -34,14 +23,14 @@
 }
 
 
-* {
+/* * {
     box-sizing: border-box;
     font-family: 'Roboto', sans-serif;
-}
+} */
 
 /* Styling the main container */
 .container {
-    width: 80%;
+    width: 100%;
     margin: auto;
     margin-top: 2rem;
     letter-spacing: 0.5px;
@@ -49,10 +38,10 @@
 }
 
 img {
-    width: 50px;
-    vertical-align: middle;
-    border-style: none;
-    border-radius: 100%;
+     width: 50px;
+    /* vertical-align: middle; */
+    /* border-style: none; */
+     border-radius: 100%; 
 }
 
 /* Styling the msg-header container */
@@ -74,27 +63,22 @@ img {
     float: left;
 }
 
-.container1 {
-    width: 270px;
-    height: auto;
-    float: left;
-    margin: 0;
-}
-
 /* styling user-name */
 .active {
-    width: 150px;
+    /* width: 150px;
     float: left;
     color: black;
     font-weight: bold;
     margin: 0 0 0 5px;
-    height: 10%;
-
+    height: 20%;*/
+    vertical-align: middle;
+    padding: 10px 10px 10px 10px;
 }
 
 /* Styling the inbox */
 .chat-page {
     padding: 0 0 50px 0;
+   
 }
 
 .msg-inbox {
@@ -106,7 +90,7 @@ img {
 
 
 .chats {
-    padding: 30px 15px 0 25px;
+   padding: 30px 15px 0 25px;
 }
 
 .msg-page {
@@ -114,18 +98,6 @@ img {
     overflow-y: auto;
 }
 
-
-
-
-input:focus {
-    outline: none;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-.send-icon {
-    font-weight: bold !important;
-}
 
 /* Styling the avatar  */
 received-chats-img {
@@ -199,58 +171,27 @@ p {
     margin-right: 1rem;
 }
 
-@media only screen and (max-device-width: 850px) {
 
-    *,
-    .time {
-        font-size: 28px;
-    }
 
-    img {
-        width: 65px;
-    }
 
-    .msg-header {
-        height: 5%;
-    }
-
-    .msg-page {
-        max-height: none;
-    }
-
-    .received-msg-inbox p {
-        font-size: 28px;
-    }
-
-    .outgoing-chats-msg p {
-        font-size: 28px;
-    }
+.hidden-window {
+    position: absolute;
+    top: 25%;
+    left: 2%;
+    width: 200px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+    z-index: 1000;
+    /* Ensure it appears on top of other elements */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    /* Add shadow for better visibility */
 }
 
-@media only screen and (max-device-width: 450px) {
 
-    *,
-    .time {
-        font-size: 28px;
-    }
 
-    img {
-        width: 65px;
-    }
-
-    .msg-header {
-        height: 5%;
-    }
-
-    .msg-page {
-        max-height: none;
-    }
-
-    .received-msg-inbox p {
-        font-size: 28px;
-    }
-
-    .outgoing-chats-msg p {
-        font-size: 28px;
-    }
+/* CSS to show the hidden window when it's active */
+.hidden-window.active {
+    display: block;
+    /* Add more styling as needed */
 }

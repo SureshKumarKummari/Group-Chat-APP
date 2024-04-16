@@ -25,23 +25,42 @@
 
             <div id="sidebar" class="col-3 justify-content-start rounded" style="background-color: grey;">
                 <div class="sidebar list-group" style="width: 100%;">
-                    <ul class="list-group" style="width: 100%;">
+
+                    <ul class="list-group" style="width: 100%;" id="usersandgroups">
+                        <li>
+                    <div class="d-flex" style="overflow:hidden;">
+                        <div class="col-4" style="color:rgb(0, 187, 255)">
+                            <button class="avatar" onclick="showuserinfo(event)">
+                                <img src="./user.jpg" alt="avatar">
+                            </button>
+                            <div class="hidden-window" id="hidden">
+                                
+
+                            </div>
+                        </div>
+                        <div class="col-4" style="margin-left: 5px;">
+                            <button class="rounded-5">
+                                create group
+                            </button>
+                        </div>
+                    </div>
+                    </li>
                         <hr>
-                        <li class="list-group-item" style="overflow:hidden;">
+                        <!-- get groups nd add here -->
+                        <!-- <li class="list-group-item" style="overflow:hidden;">
                             <button class="btn d-flex align-items-center" onclick="handlechat(this)">
                                 <div class="col-2">
                                     <div class="avatar">
-                                        <img src="https://t3.ftcdn.net/jpg/03/46/83/96/240_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
+                                        <img src="./user.jpg"
                                             alt="avatar">
                                     </div>
                                 </div>
                                 <div class="col-2"></div>
                                 <div class="col">
                                     <h6>User1</h6>
-                                    <!-- <h6>Last seen</h6> -->
                                 </div>
                             </button>
-                        </li>
+                        </li> -->
 
                     </ul>
                 </div>
@@ -70,6 +89,7 @@
 
                             <!-- msg-bottom section -->
 
+
                             <div class="msg-bottom">
                                 <div class="input-group">
                                     <input type="text" id="message" class="form-control"
@@ -80,7 +100,8 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
+
+                            </div>
                     </div>
                 </div>
             </div>
@@ -90,8 +111,41 @@
 </body>
 <script src="../node_modules/socket.io/client-dist/socket.io.js"></script>
 <script>
+    function saveuserinfo(){
+        let d=document.getElementById('hidden');
+            let usernameP = document.createElement('p');
+            let emailP = document.createElement('p');
+            let phoneP = document.createElement('p');
+
+            // Set the text content of each p element to the corresponding data field
+            usernameP.textContent = "Username: " + localStorage.getItem('username');
+            emailP.textContent = "Email: " + localStorage.getItem('email');
+            phoneP.textContent = "Phone: " + localStorage.getItem('phone');
+
+            // Append the p elements to the d element
+            d.appendChild(usernameP);
+            d.appendChild(emailP);
+            d.appendChild(phoneP);
+
+    }
+
+    saveuserinfo();
 
 
+    function showuserinfo(event){
+        console.log('hidden window called!');
+            // Get the parent li element of the clicked image
+            let parentLi = event.target.closest('li');
+            console.log('hidden window called!',parentLi);
+            // Get the hidden window inside the parent li
+            let hiddenWindow = parentLi.querySelector('.hidden-window');
+            console.log('hidden window called!',hiddenWindow);
+            // Toggle the active class of the hidden window
+            hiddenWindow.classList.toggle('active');
+
+    }
+
+//to select chat with different person or group
     function handlechat(buttonElement) {
 
         let chatwindow = document.getElementById('changecol');
@@ -216,7 +270,48 @@
     }
 
 
+    function addUsersandGroups(data){
+        let ul=document.getElementById('usersandgroups');
+
+            let li = document.createElement('li');
+            li.classList.add('list-group-item');
+
+            // Create the button element
+            let button = document.createElement('button');
+            button.classList.add('btn', 'd-flex', 'align-items-center');
+            button.setAttribute('onclick', 'handlechat(this)');
+
+            // Create the div elements for avatar and user details
+            let avatarDiv = document.createElement('div');
+            avatarDiv.classList.add('col-2');
+            let userDiv = document.createElement('div');
+            userDiv.classList.add('col');
+
+            // Create the avatar image
+            let avatarImg = document.createElement('img');
+            avatarImg.setAttribute('src', './user.jpg');
+            avatarImg.setAttribute('alt', 'avatar');
+            avatarDiv.appendChild(avatarImg);
+
+            // Create the user name element
+            let userName = document.createElement('h6');
+            userName.textContent = data.username;
+            userDiv.appendChild(userName);
+
+            // Append the div elements to the button
+            button.appendChild(avatarDiv);
+            button.appendChild(document.createElement('div')); // Placeholder for col-2
+            button.appendChild(userDiv);
+
+            // Append the button to the li element
+            li.appendChild(button);
+
+            // Append the li element to the ul
+            ul.appendChild(li);
+    }
+
     const socket = io('http://localhost:4000');
+
 
     function handleSubmit() {
         const message = document.getElementById('message').value;
@@ -225,6 +320,19 @@
         addSentMessage(message);
     }
 
+    function getusersdata() {
+        let userid=localStorage.getItem('userid');
+        socket.emit('getusersdata', userid);
+    }
+
+    socket.on('getusersdata',(data)=>{
+        for(let i=0;i<data.length;i++){
+            addUsersandGroups(data[i]);
+        }
+    })
+
+    getusersdata();
+    
     socket.on('message', (data) => {
         console.log('Received message:', data);
         addreceivedMessage(data);

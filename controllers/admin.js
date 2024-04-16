@@ -38,7 +38,7 @@ exports.login = async (req, res, next) => {
         if (user) {
             const result = await bcrypt.checkpass(req.params.password, user.password);
             if (result) {
-                res.status(200).json({token: userauth.token(user.id)
+                res.status(200).json({token: userauth.token(user.id),userdata:user
                 });
                // res.status(200).send("User logged in Successfully!");
             } else {
