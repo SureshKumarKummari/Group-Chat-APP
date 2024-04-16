@@ -35,7 +35,7 @@
                             </button>
                             <div class="hidden-window" id="hidden">
                                 
-
+                                
                             </div>
                         </div>
                         <div class="col-4" style="margin-left: 5px;">
@@ -69,7 +69,9 @@
 
             <div class="col-8" style="display:none;" id="changecol">
                 <div class="container">
-                    <div id="header"></div>
+                    <div id="header">
+                       
+                    </div>
                     <!-- msg-header section starts -->
                     
                     <!-- msg-header section ends -->
@@ -116,12 +118,11 @@
             let usernameP = document.createElement('p');
             let emailP = document.createElement('p');
             let phoneP = document.createElement('p');
-
+        
             // Set the text content of each p element to the corresponding data field
             usernameP.textContent = "Username: " + localStorage.getItem('username');
             emailP.textContent = "Email: " + localStorage.getItem('email');
             phoneP.textContent = "Phone: " + localStorage.getItem('phone');
-
             // Append the p elements to the d element
             d.appendChild(usernameP);
             d.appendChild(emailP);
@@ -131,15 +132,11 @@
 
     saveuserinfo();
 
-
+//displaying user-data hidden window
     function showuserinfo(event){
-        console.log('hidden window called!');
-            // Get the parent li element of the clicked image
             let parentLi = event.target.closest('li');
-            console.log('hidden window called!',parentLi);
-            // Get the hidden window inside the parent li
+
             let hiddenWindow = parentLi.querySelector('.hidden-window');
-            console.log('hidden window called!',hiddenWindow);
             // Toggle the active class of the hidden window
             hiddenWindow.classList.toggle('active');
 
@@ -149,32 +146,50 @@
     function handlechat(buttonElement) {
 
         let chatwindow = document.getElementById('changecol');
-        console.log(chatwindow.style.display);
         if (chatwindow.style.display == 'none') {
             chatwindow.style.display = 'block';
-            console.log(chatwindow.style.display);
+            //console.log(chatwindow.style.display);
         }
         // Access the img and h6 elements inside the button
-        let imgElement = buttonElement.querySelector('div.col-2 div.avatar img');
+        let imgElement = document.createElement('img');
         let h6Element = buttonElement.querySelector('div.col h6');
 
-        // Access the src attribute of the img element
-        let imageUrl = imgElement.getAttribute('src');
+        let imageUrl = './user.jpg';
 
         // Access the text content of the h6 element
         let username = h6Element.textContent;
 
-        console.log("Username:", username);
-        console.log("Image URL:", imageUrl);
-        // Now you can use the username and imageUrl as needed in your function
-        // For example, you can include them in the header HTML
         let header = document.getElementById('header');
-        header.innerHTML = "";
-        header.innerHTML = `<div class="msg-header">
-        <div class="container1">
-            <div class="col-2"></div>
-        <img src="${imageUrl}" alt="avatar" class="msgimg"/>
-        <div class="active"><p>${username}</p></div></div></div>`;
+        header.innerHTML = ""; // Clear the header contents
+
+        // Create elements
+        let msgHeaderDiv = document.createElement('div');
+        msgHeaderDiv.classList.add('msg-header');
+
+        let container1Div = document.createElement('div');
+        container1Div.classList.add('container1');
+
+        let col2Div = document.createElement('div');
+        col2Div.classList.add('col-2');
+
+        let img = document.createElement('img');
+        img.src = imageUrl;
+        img.alt = 'avatar';
+        img.classList.add('msgimg');
+
+        let activeDiv = document.createElement('div');
+        activeDiv.classList.add('active');
+        let p = document.createElement('p');
+        p.textContent = username;
+        activeDiv.appendChild(p);
+
+        // Append elements
+        container1Div.appendChild(col2Div);
+        container1Div.appendChild(img);
+        container1Div.appendChild(activeDiv);
+        msgHeaderDiv.appendChild(container1Div);
+        header.appendChild(msgHeaderDiv);
+
     }
 
 
@@ -303,6 +318,8 @@
             button.appendChild(document.createElement('div')); // Placeholder for col-2
             button.appendChild(userDiv);
 
+            let hiddenid = document.createElement('hidden');
+            hiddenid.textContent=data.user_id;
             // Append the button to the li element
             li.appendChild(button);
 
@@ -325,9 +342,10 @@
         socket.emit('getusersdata', userid);
     }
 
-    socket.on('getusersdata',(data)=>{
-        for(let i=0;i<data.length;i++){
-            addUsersandGroups(data[i]);
+    socket.on('usersdata',(data)=>{
+        console.log(data.users);
+        for(let i=0;i<data.users.length;i++){
+            addUsersandGroups(data.users[i]);
         }
     })
 
