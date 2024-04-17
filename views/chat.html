@@ -25,7 +25,15 @@
 
             <div id="sidebar" class="col-3 justify-content-start rounded" style="background-color: grey;">
                 <div class="sidebar list-group" style="width: 100%;">
-
+                    <!-- For search functionality <div class="row">
+                        <div class="col-8">
+                    <input type="text" class="form-control" placeholder="Type user/group name"/>
+                    </div>
+                    <div class="col-4" style="overflow:hidden;">
+                        <button class="form-control" >Search</button>
+                    </div>
+                    </div> -->
+                    <hr>
                     <ul class="list-group" style="width: 100%;" id="usersandgroups">
                         <li>
                     <div class="d-flex" style="overflow:hidden;">
@@ -39,9 +47,13 @@
                             </div>
                         </div>
                         <div class="col-4" style="margin-left: 5px;">
-                            <button class="rounded-5">
+                            <button class="rounded-5" onclick="showuserform(event)">
                                 create group
                             </button>
+                            <div class="hidden-window-form" id="hidden-form">
+                            
+                            
+                            </div>
                         </div>
                     </div>
                     </li>
@@ -140,6 +152,19 @@
             // Toggle the active class of the hidden window
             hiddenWindow.classList.toggle('active');
     }
+
+    //showing userform - for adding new group
+
+    function showuserform(event){
+        let div = event.target.closest('div');
+        let hiddenWindow = div.querySelector('.hidden-window-form');
+        // Toggle the active class of the hidden window
+        hiddenWindow.classList.toggle('active');
+    }
+
+
+
+
 
 //to select chat with different person or group
     function handlechat(buttonElement) {
@@ -337,8 +362,12 @@
             // Append the li element to the ul
             ul.appendChild(li);
     }
-
-    const socket = io('http://localhost:4000');
+    let userid = localStorage.getItem('userid');
+    const socket = io('http://localhost:4000', {
+            query: {
+                userid: Number(userid)
+            }
+        });
 
 
     function handleSubmit() {
@@ -349,7 +378,8 @@
         console.log(receiverid);
         let senderid = localStorage.getItem('userid');
         console.log(receiverid,senderid);
-        //socket.emit('message', {senderid,receiverid,message});
+        socket.emit('joinRoom',Number(receiverid));
+        socket.emit('message', {senderid,receiverid,message});
         //addSentMessage(message);
     }
 
@@ -368,15 +398,12 @@
 
         })
 
-
-
-
     getusersdata();
     
-    /* socket.on('message', (data) => {
+    socket.on('message', (data) => {
         console.log('Received message:', data);
         addreceivedMessage(data);
-    }); */
+    });
 
     function displaychat(receiverid) {
             let d = document.getElementById('msg-page');
@@ -400,8 +427,8 @@
 
 
 
-
-    const messageInput = document.getElementById('message');
+//Message typing events
+  /*  const messageInput = document.getElementById('message');
     let typingTimeout;
 
     messageInput.addEventListener('input', () => {
@@ -410,7 +437,79 @@
         typingTimeout = setTimeout(() => {
             socket.emit('stop typing');
         }, 1000);
-    });
+    });*/
+
+
+//getallusersdata for hidden-window-form and addind usersdata for hidden-window
+    function getallusersdata() {
+            let userid = localStorage.getItem('userid');
+            socket.emit('getallusers', userid);
+        }
+
+    getallusersdata();
+
+        socket.on('allusers', (data) => {
+            adduserstoform(data);
+            })
+
+
+        function adduserstoform(data) {
+
+            let div = document.getElementById('hidden-form');
+            div.innerHTML = ''; // Clear the div contents
+
+            // Create the form element
+            let form = document.createElement('form');
+
+            // Create the text field for the group chat name
+            let groupNameInput = document.createElement('input');
+            groupNameInput.setAttribute('type', 'text');
+            groupNameInput.setAttribute('placeholder', 'Enter group chat name');
+            groupNameInput.setAttribute('name', 'group-name');
+            form.appendChild(groupNameInput);
+            form.appendChild(document.createElement('br')); // Line break
+
+            // Loop through the data array to create checkboxes
+            for (let i = 0; i < data.length; i++) {
+                let userData = data[i];
+
+                // Create the checkbox element
+                let checkbox = document.createElement('input');
+                checkbox.setAttribute('type', 'checkbox');
+                checkbox.setAttribute('name', 'user');
+                checkbox.setAttribute('value', userData.username);
+
+                // Create the label for the checkbox (displaying the username)
+                let label = document.createElement('label');
+                label.textContent = userData.username;
+
+                // Create the hidden element to store the user_id
+                let hiddenInput = document.createElement('input');
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'user-id');
+                hiddenInput.setAttribute('value', userData.user_id);
+
+                // Append the checkbox, label, and hidden input to the form
+                form.appendChild(checkbox);
+                form.appendChild(label);
+                form.appendChild(hiddenInput);
+                form.appendChild(document.createElement('br')); // Line break
+            }
+
+            // Create the button to create the group
+            let createGroupButton = document.createElement('button');
+            createGroupButton.textContent = 'Create Group';
+            createGroupButton.setAttribute('type', 'submit');
+
+            // Append the button to the form
+            form.appendChild(createGroupButton);
+
+            // Append the form to the div
+            div.appendChild(form);
+
+
+        }
+
 
 
 </script>

@@ -175,7 +175,32 @@ p {
 
 
 
-.hidden-window {
+/*.hidden-window,.hidden-window-form {
+    position: absolute;
+    top: 25%;
+    left: 2%;
+    width: 200px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+    z-index: 1000;*/
+    /* Ensure it appears on top of other elements */
+    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
+/*}*/
+
+
+
+/* CSS to show the hidden window when it's active */
+/*.hidden-window.active,.hidden-form.active {
+    display: block; */
+    /* Add more styling as needed */
+/*}
+*/
+
+
+/* Styling for the hidden window */
+.hidden-window,
+.hidden-window-form {
     position: absolute;
     top: 25%;
     left: 2%;
@@ -189,10 +214,9 @@ p {
     /* Add shadow for better visibility */
 }
 
-
-
-/* CSS to show the hidden window when it's active */
-.hidden-window.active {
+/* Styling for the hidden window when it's active */
+.hidden-window.active,
+.hidden-window-form.active {
     display: block;
     /* Add more styling as needed */
 }
