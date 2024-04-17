@@ -80,37 +80,104 @@ socket.on('stop typing', () => {
         // Extract unique user IDs
         const userIds = [...new Set(userMessageIds.map(message => message.senderId).concat(userMessageIds.map(message => message.receiverId)))];
 
-        // Find user details for the retrieved user IDs
         const userData = await users.findAll({
-            //where: { user_id: userIds },
+            where: { 
+              user_id: {
+                [Sequelize.Op.in]: userIds, // Include user IDs from the userIds array
+                [Sequelize.Op.ne]: id // Exclude the specified userIdToExclude
+              }
+              },
             attributes: ['user_id', 'username']
-        });
+          });
 
+        //console.log("userids",userData);
         // Find all distinct group IDs where the given user has sent or received a message
-       /* const groupMessageIds = await messages.findAll({
-            attributes: ['groupId'],
+        const groupMessageIds = await messages.findAll({
+            attributes: ['id'],
             where: {
-                [Sequelize.Op.or]: [{ senderId: id, receiverType: 'group' }, { receiverId: id, receiverType: 'group' }]
+                [Sequelize.Op.or]: [{ senderId: id, isGroup: true }, { receiverId: id, isGroup: true }]
             },
             raw: true
         });
-
+        //console.log(groupMessageIds);
         // Extract unique group IDs
-        const groupIds = [...new Set(groupMessageIds.map(message => message.groupId))];
+        const groupIds = [...new Set(groupMessageIds.map(message => message.id))];
 
+         console.log(groupIds);
         // Find group details for the retrieved group IDs
+       
+        
         const groupData = await groups.findAll({
-            where: { group_id: groupIds },
-            attributes: ['group_id', 'group_name']
+          where: {
+            [Sequelize.Op.or]: groupIds.map(group => ({ id: id }))
+          },
+          attributes: ['id', 'name']
         });
-*/
+        
+         console.log(groupData);
         // Send the retrieved user and group data to the client
-        socket.emit('usersdata', { users: userData });
+        socket.emit('usersdata', { users: userData,groups: groupData });
     } catch (error) {
         console.error('Error fetching user and group data:', error);
         // Handle error, if any
     }
 });
+
+
+//getting and sending messages
+
+
+//socket.on('getcurrentchat', ({ receiverid, userid }));
+// Assuming you have access to your Sequelize models and socket.io instance
+
+socket.on('getcurrentchat', async ({ receiverid, userid }) => {
+    try {
+        // Fetch messages exchanged between the specified users
+        const chatMessages = await messages.findAll({
+            where: {
+                [Sequelize.Op.or]: [
+                    { senderId: userid, receiverId: receiverid },
+                    { senderId: receiverid, receiverId: userid }
+                ]
+            },
+            order: [['createdAt', 'ASC']], // Order by creation time
+        //     include: [
+        //         { model: users, as: 'sender' }, // Include sender details
+        //         { model: users, as: 'receiver' } // Include receiver details
+        //     ]
+         });
+
+        // Extract relevant message details to send to the client
+        // const formattedMessages = chatMessages.map(message => {
+        //     return {
+        //         id: message.id,
+        //         content: message.content,
+        //         sender: {
+        //             id: message.sender.user_id,
+        //             username: message.sender.username
+        //         },
+        //         receiver: {
+        //             id: message.receiver.user_id,
+        //             username: message.receiver.username
+        //         },
+        //         createdAt: message.createdAt,
+        //         updatedAt: message.updatedAt
+        //     };
+        // });
+        console.log(chatMessages);
+         let finalchat=chatMessages.map(message=>{return message.dataValues});
+         console.log(finalchat);
+        // Emit the formatted messages to the client
+        socket.emit('currentchat', chatMessages);
+    } catch (error) {
+        console.error('Error fetching chat messages:', error);
+        // Handle error, if any
+    }
+});
+
+
+
+
 
 
 });

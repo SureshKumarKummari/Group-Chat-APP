@@ -139,7 +139,6 @@
             let hiddenWindow = parentLi.querySelector('.hidden-window');
             // Toggle the active class of the hidden window
             hiddenWindow.classList.toggle('active');
-
     }
 
 //to select chat with different person or group
@@ -151,16 +150,20 @@
             //console.log(chatwindow.style.display);
         }
         // Access the img and h6 elements inside the button
-        let imgElement = document.createElement('img');
-        let h6Element = buttonElement.querySelector('div.col h6');
+        let imgElement = buttonElement.querySelector('img');
+        let h6Element = buttonElement.querySelector('h6');
+        let hiddenElement = buttonElement.querySelector('input[type="hidden"]');
+        //console.log(hiddenElement.value);
+        const hiddenvalue=hiddenElement.value;
+        // Get the image source
+        let imageUrl = imgElement.getAttribute('src');
 
-        let imageUrl = './user.jpg';
-
-        // Access the text content of the h6 element
+        // Get the username from the h6 element
         let username = h6Element.textContent;
 
+        // Clear the header contents
         let header = document.getElementById('header');
-        header.innerHTML = ""; // Clear the header contents
+        header.innerHTML = "";
 
         // Create elements
         let msgHeaderDiv = document.createElement('div');
@@ -189,10 +192,12 @@
         container1Div.appendChild(activeDiv);
         msgHeaderDiv.appendChild(container1Div);
         header.appendChild(msgHeaderDiv);
+        localStorage.setItem('currentreceiverorgroup',hiddenvalue);
+        displaychat(hiddenvalue)
 
     }
 
-
+    
 
 
     function addreceivedMessage(message) {
@@ -207,7 +212,7 @@
         receivedChatsImgDiv.classList.add('received-chats-img');
 
         let img = document.createElement('img');
-        img.setAttribute('src', 'user2.png');
+        img.setAttribute('src', './user.jpg');
 
         let receivedMsgDiv = document.createElement('div');
         receivedMsgDiv.classList.add('received-msg');
@@ -251,7 +256,7 @@
         outgoingChatsImgDiv.classList.add('outgoing-chats-img');
 
         let img = document.createElement('img');
-        img.setAttribute('src', 'user1.png');
+        img.setAttribute('src', './user.jpg');
 
         let outgoingMsgDiv = document.createElement('div');
         outgoingMsgDiv.classList.add('outgoing-msg');
@@ -299,8 +304,9 @@
             // Create the div elements for avatar and user details
             let avatarDiv = document.createElement('div');
             avatarDiv.classList.add('col-2');
+            avatarDiv.style.paddingRight="30px";
             let userDiv = document.createElement('div');
-            userDiv.classList.add('col');
+            userDiv.classList.add('col');//col
 
             // Create the avatar image
             let avatarImg = document.createElement('img');
@@ -313,13 +319,18 @@
             userName.textContent = data.username;
             userDiv.appendChild(userName);
 
+            // Create the hidden input field for user ID
+            let hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'hiddenid');
+            hiddenInput.setAttribute('value', data.user_id);
+
             // Append the div elements to the button
             button.appendChild(avatarDiv);
             button.appendChild(document.createElement('div')); // Placeholder for col-2
             button.appendChild(userDiv);
+            button.appendChild(hiddenInput); // Append the hidden input field
 
-            let hiddenid = document.createElement('hidden');
-            hiddenid.textContent=data.user_id;
             // Append the button to the li element
             li.appendChild(button);
 
@@ -332,9 +343,14 @@
 
     function handleSubmit() {
         const message = document.getElementById('message').value;
-        console.log(message);
-        socket.emit('message', message);
-        addSentMessage(message);
+
+        let receiverid=localStorage.getItem('currentreceiverorgroup');
+
+        console.log(receiverid);
+        let senderid = localStorage.getItem('userid');
+        console.log(receiverid,senderid);
+        //socket.emit('message', {senderid,receiverid,message});
+        //addSentMessage(message);
     }
 
     function getusersdata() {
@@ -342,19 +358,47 @@
         socket.emit('getusersdata', userid);
     }
 
-    socket.on('usersdata',(data)=>{
-        console.log(data.users);
-        for(let i=0;i<data.users.length;i++){
-            addUsersandGroups(data.users[i]);
-        }
-    })
+
+
+     socket.on('usersdata', (data) => {
+            console.log(data.users,data.groups);
+            for (let i = 0; i < data.users.length; i++) {
+                addUsersandGroups(data.users[i]);
+            }
+
+        })
+
+
+
 
     getusersdata();
     
-    socket.on('message', (data) => {
+    /* socket.on('message', (data) => {
         console.log('Received message:', data);
         addreceivedMessage(data);
-    });
+    }); */
+
+    function displaychat(receiverid) {
+            let d = document.getElementById('msg-page');
+            d.innerHTML="";
+            let userid = localStorage.getItem('userid')
+            socket.emit('getcurrentchat', { receiverid, userid });
+        }
+    
+        socket.on('currentchat',(data)=>{
+            let uid=localStorage.getItem('userid');
+            for(let i=0;i<data.length;i++){
+             if(data[i].senderId==uid){
+              addSentMessage(data[i].content);
+             }else{
+              addreceivedMessage(data[i].content);
+             }
+            }
+
+        })
+
+
+
 
 
     const messageInput = document.getElementById('message');
