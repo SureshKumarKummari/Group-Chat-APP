@@ -380,7 +380,7 @@
         console.log(receiverid,senderid);
         socket.emit('joinRoom',Number(receiverid));
         socket.emit('message', {senderid,receiverid,message});
-        //addSentMessage(message);
+        addSentMessage(message);
     }
 
     function getusersdata() {
