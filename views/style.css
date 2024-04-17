@@ -200,7 +200,8 @@ p {
 
 /* Styling for the hidden window */
 .hidden-window,
-.hidden-window-form {
+.hidden-window-form,
+.hidden-window-join {
     position: absolute;
     top: 25%;
     left: 2%;
@@ -216,7 +217,8 @@ p {
 
 /* Styling for the hidden window when it's active */
 .hidden-window.active,
-.hidden-window-form.active {
+.hidden-window-form.active,
+.hidden-window-join.active {
     display: block;
     /* Add more styling as needed */
 }

@@ -7,6 +7,7 @@ const users = require('./models/users');
 const messages = require('./models/messages');
 const groups = require('./models/groups');
 const group_members = require('./models/group_members');
+const links=require('./models/links');
 
 const auth=require('./middleware/userauthentication');
 
@@ -136,7 +137,7 @@ socket.on('getcurrentchat', async ({ receiverid, userid }) => {
 
 
 
-
+//To get all users
 socket.on('getallusers', async (data) => {
     try {
         // Fetch all users from the database
@@ -151,6 +152,33 @@ socket.on('getallusers', async (data) => {
         // Handle the error
     }
 });
+
+
+//To get links to join group
+socket.on('getlinkstojoin',async(userid)=>{
+
+  try {
+        const groupids = await links.findAll({
+            attributes: ['group_id'],
+            where:{'userid':userid},
+        });
+
+        const linkstojoin=await groups.findAll({
+          attributes:[['id',group_id],['name',group_name]],
+          where:{id:[groupids]}
+        })
+        // Send the list of users to the client
+        socket.emit('linkstojoin',linkstojoin);
+    } catch (error) {
+        console.error('Error fetching all links', error);
+    }
+
+
+
+});
+
+
+
 
 
 

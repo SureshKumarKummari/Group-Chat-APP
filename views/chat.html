@@ -55,24 +55,19 @@
                             
                             </div>
                         </div>
+                        <div class="col" style="margin-left: 5px;">
+                            <button class="rounded-5" onclick="showlinkstojoingroup(event)">
+                                Join group
+                            </button>
+                            <div class="hidden-window-join" id="hidden-join">
+                            <h6>No invitations to join Group</h6>
+                        
+                            </div>
+                        </div>
                     </div>
                     </li>
                         <hr>
-                        <!-- get groups nd add here -->
-                        <!-- <li class="list-group-item" style="overflow:hidden;">
-                            <button class="btn d-flex align-items-center" onclick="handlechat(this)">
-                                <div class="col-2">
-                                    <div class="avatar">
-                                        <img src="./user.jpg"
-                                            alt="avatar">
-                                    </div>
-                                </div>
-                                <div class="col-2"></div>
-                                <div class="col">
-                                    <h6>User1</h6>
-                                </div>
-                            </button>
-                        </li> -->
+                        <!-- get groups nd add here as list elements-->
 
                     </ul>
                 </div>
@@ -81,11 +76,10 @@
 
             <div class="col-8" style="display:none;" id="changecol">
                 <div class="container">
+                    <!-- msg-header section starts -->
                     <div id="header">
                        
                     </div>
-                    <!-- msg-header section starts -->
-                    
                     <!-- msg-header section ends -->
 
                     <div class="chat-page">
@@ -94,16 +88,11 @@
                                 <!-- Message container -->
                                 <div class="msg-page" id="msg-page">
 
-                                    <!-- Outgoing messages -->
-                                    
-
-                                    <!--received chats--> 
+                                    <!-- Outgoing and received messages -->
                                 </div>
                             </div>
 
                             <!-- msg-bottom section -->
-
-
                             <div class="msg-bottom">
                                 <div class="input-group">
                                     <input type="text" id="message" class="form-control"
@@ -162,7 +151,13 @@
         hiddenWindow.classList.toggle('active');
     }
 
-
+    function showlinkstojoingroup(event){
+        let div = event.target.closest('div');
+        let hiddenWindow = div.querySelector('.hidden-window-join');
+       // console.log(hiddenWindow);
+        // Toggle the active class of the hidden window
+        hiddenWindow.classList.toggle('active');
+    }
 
 
 
@@ -221,8 +216,6 @@
         displaychat(hiddenvalue)
 
     }
-
-    
 
 
     function addreceivedMessage(message) {
@@ -433,8 +426,45 @@
 
         })
 
+        //Adding links to join groups to hidden window
 
+        function getlinkstojoin(){
+            let userid = localStorage.getItem('userid');
+            socket.emit('getlinkstojoin',userid);
+        }
 
+        getlinkstojoin();
+
+        socket.on('linkstojoin',(data)=>{
+            if(data.length!=0){
+                let div=document.getElementById('hidden-join');
+                div.innerHTML ="";
+                div.innerHTML=`<h6>Click on group which you want to join</h6>`;
+                for(let i=0;i<data.length;i++){
+                    addlinkstohidden(data[i],div);
+                }
+            }
+        })
+
+        function addlinkstohidden(data,div){
+            var button = document.createElement("button");
+
+            // Create an image element
+            var img = document.createElement("img");
+            img.src = "./group.jpg"; // Set image URL
+            img.alt = "Group Image"; // Add alt text for accessibility
+            button.appendChild(img); // Append image
+
+            var groupName = document.createTextNode(data.groupName);
+            button.appendChild(groupName);
+
+            // Add onclick event handler
+            button.onclick = function () {
+                handlejoinClick(button);
+            };
+
+            div.appendChild(button);
+        }
 
 //Message typing events
   /*  const messageInput = document.getElementById('message');
