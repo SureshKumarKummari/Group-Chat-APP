@@ -314,8 +314,8 @@
 
     }
 
-
-    function addUsersandGroups(data){
+//Adding users and groups to sidebar
+    function addUsersandGroups(data,isgroup){
         let ul=document.getElementById('usersandgroups');
 
             let li = document.createElement('li');
@@ -335,7 +335,11 @@
 
             // Create the avatar image
             let avatarImg = document.createElement('img');
+            if(isgroup){
+                avatarImg.setAttribute('src', './group.jpg');
+            }else{
             avatarImg.setAttribute('src', './user.jpg');
+            }
             avatarImg.setAttribute('alt', 'avatar');
             avatarDiv.appendChild(avatarImg);
 
@@ -393,7 +397,12 @@
      socket.on('usersdata', (data) => {
             console.log(data.users,data.groups);
             for (let i = 0; i < data.users.length; i++) {
-                addUsersandGroups(data.users[i]);
+                if(data.users[i].user_id!=localStorage.getItem('userid')) {
+                addUsersandGroups(data.users[i],false);
+                }
+            }
+            for (let i = 0; i < data.groups.length; i++) {
+                 addUsersandGroups(data.users[i],true);
             }
 
         })
