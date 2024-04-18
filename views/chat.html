@@ -111,6 +111,7 @@
 
         </div>
     </div>
+   
 </body>
 <script src="../node_modules/socket.io/client-dist/socket.io.js"></script>
 <script>
@@ -371,7 +372,6 @@
         const message = document.getElementById('message').value;
 
         let receiverid=localStorage.getItem('currentreceiverorgroup');
-
         //console.log(receiverid);
         let senderid = localStorage.getItem('userid');
         //console.log(receiverid,senderid);
@@ -385,8 +385,6 @@
         socket.emit('getusersdata', userid);
     }
 
-
-
      socket.on('usersdata', (data) => {
             //console.log(data.users,data.groups);
             for (let i = 0; i < data.users.length; i++) {
@@ -394,8 +392,9 @@
                 addUsersandGroups(data.users[i],false);
                 }
             }
+            //console.log(data.groups,data.users);
             for (let i = 0; i < data.groups.length; i++) {
-                 addUsersandGroups(data.users[i],true);
+                 addUsersandGroups(data.groups[i],true);
             }
 
         })
@@ -467,8 +466,6 @@
             hiddenInput.value = data.group_id; // Set the value
             button.appendChild(hiddenInput); // Append hidden input to the button
 
-
-
             var groupName = document.createTextNode(data.group_name);
             button.appendChild(groupName);
 
@@ -503,16 +500,16 @@
 
 
 //Message typing events
-  /*  const messageInput = document.getElementById('message');
-    let typingTimeout;
-
-    messageInput.addEventListener('input', () => {
-        clearTimeout(typingTimeout);
-        socket.emit('typing');
-        typingTimeout = setTimeout(() => {
-            socket.emit('stop typing');
-        }, 1000);
-    });*/
+  //  const messageInput = document.getElementById('message');
+   // let typingTimeout;
+//
+  //  messageInput.addEventListener('input', () => {
+    //    clearTimeout(typingTimeout);
+      //  socket.emit('typing');
+       // typingTimeout = setTimeout(() => {
+        //    socket.emit('stop typing');
+        //}, 1000);
+    //});
 
 
 //getallusersdata for hidden-window-form and addind usersdata for hidden-window
@@ -553,17 +550,14 @@
                 checkbox.setAttribute('type', 'checkbox');
                 checkbox.setAttribute('name', 'user');
                 checkbox.setAttribute('value', userData.username);
-
                 // Create the label for the checkbox (displaying the username)
                 let label = document.createElement('label');
                 label.textContent = userData.username;
-
                 // Create the hidden element to store the user_id
                 let hiddenInput = document.createElement('input');
                 hiddenInput.setAttribute('type', 'hidden');
                 hiddenInput.setAttribute('name', 'user-id');
                 hiddenInput.setAttribute('value', userData.user_id);
-
                 // Append the checkbox, label, and hidden input to the form
                 form.appendChild(checkbox);
                 form.appendChild(label);
@@ -582,7 +576,6 @@
             // Append the form to the div
             div.appendChild(form);
 
-
         }
 
 
@@ -594,45 +587,30 @@
                 let form = event.target;
                // Get the group name from the input field
                 let groupName = form.querySelector('input[name="group-name"]').value;
-
                 // Get all checked checkboxes for users
                 let checkedCheckboxes = form.querySelectorAll('input[type="checkbox"]:checked');
-
                 // Initialize arrays to store user names and their corresponding user IDs
                 let selectedUsers = [];
                 let selectedUserIds = [];
-
                 // Loop through checked checkboxes to gather user data
                 checkedCheckboxes.forEach(function (checkbox) {
                     // Get the label associated with the checkbox (which contains the username)
                     let label = checkbox.nextElementSibling;
-
                     // Get the hidden input element containing the user ID
                     let hiddenInput = label.nextElementSibling;
-
                     // Push username and user ID to respective arrays
                     selectedUsers.push(label.textContent);
                     selectedUserIds.push(hiddenInput.value);
                 });
 
-                // Now you have groupName, selectedUsers, and selectedUserIds containing the required data
-               // console.log("Group Name:", groupName);
-                //console.log("Selected Users:", selectedUsers);
-                //console.log("Selected User IDs:", selectedUserIds);
-
                 form.reset();
                 socket.emit("creategroup",{groupName,selectedUsers,selectedUserIds});
-                // socket.emit('getcurrentchat', { receiverid, userid });
                 socket.on('groupcreated',(data)=>{
-                    //console.log(data);
                     addUsersandGroups(data, true);
                 
                 });
         }
 
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js">
 </script>
 
 </html>

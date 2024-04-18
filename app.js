@@ -92,7 +92,7 @@ io.on('connection', (socket) => {
                 //attributes: ['id', 'name', 'adminId'] // Select specific attributes of groups
                 attributes: [
                   ['id', 'user_id'],    // Alias 'user_id' for 'id'
-                  ['name', 'user_name'], // Alias 'user_name' for 'name'
+                  ['name', 'username'], // Alias 'user_name' for 'name'
                   'adminId']
               });
           }).then(groupData => {
