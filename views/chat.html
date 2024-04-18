@@ -372,9 +372,9 @@
 
         let receiverid=localStorage.getItem('currentreceiverorgroup');
 
-        console.log(receiverid);
+        //console.log(receiverid);
         let senderid = localStorage.getItem('userid');
-        console.log(receiverid,senderid);
+        //console.log(receiverid,senderid);
         socket.emit('joinRoom',Number(receiverid));
         socket.emit('message', {senderid,receiverid,message});
         addSentMessage(message);
@@ -388,7 +388,7 @@
 
 
      socket.on('usersdata', (data) => {
-            console.log(data.users,data.groups);
+            //console.log(data.users,data.groups);
             for (let i = 0; i < data.users.length; i++) {
                 if(data.users[i].user_id!=localStorage.getItem('userid')) {
                 addUsersandGroups(data.users[i],false);
@@ -403,7 +403,7 @@
     getusersdata();
     
     socket.on('message', (data) => {
-        console.log('Received message:', data);
+        //console.log('Received message:', data);
         addreceivedMessage(data);
     });
 
@@ -436,26 +436,40 @@
         getlinkstojoin();
 
         socket.on('linkstojoin',(data)=>{
+           // console.log(data);
             if(data.length!=0){
                 let div=document.getElementById('hidden-join');
                 div.innerHTML ="";
                 div.innerHTML=`<h6>Click on group which you want to join</h6>`;
                 for(let i=0;i<data.length;i++){
                     addlinkstohidden(data[i],div);
+        
                 }
             }
         })
 
         function addlinkstohidden(data,div){
             var button = document.createElement("button");
-
+           // console.log(data);
             // Create an image element
             var img = document.createElement("img");
             img.src = "./group.jpg"; // Set image URL
             img.alt = "Group Image"; // Add alt text for accessibility
             button.appendChild(img); // Append image
+            button.classList.add("btn");
+            button.classList.add("btn-primary");
+            button.style.width="100%";
 
-            var groupName = document.createTextNode(data.groupName);
+            // Create a hidden input element for group_id
+            var hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "group_id"; // Set the name attribute
+            hiddenInput.value = data.group_id; // Set the value
+            button.appendChild(hiddenInput); // Append hidden input to the button
+
+
+
+            var groupName = document.createTextNode(data.group_name);
             button.appendChild(groupName);
 
             // Add onclick event handler
@@ -465,6 +479,28 @@
 
             div.appendChild(button);
         }
+
+
+
+        function handlejoinClick(button){
+            var hiddenInput = button.querySelector('input[name="group_id"]');
+            // Get the value of the hidden input element (group_id)
+            var groupId = hiddenInput.value;
+            let username=button.textContent;
+            button.remove();
+            //console.log(groupId);
+            socket.emit('addtogroup',groupId);
+
+            socket.on('okaddgroup',(groupid)=>{
+                let data={username:username,uer_id:groupid}
+                //console.log(data);
+                addUsersandGroups(data, true);
+                
+                //username, user_id-groupid
+            });
+
+        }
+
 
 //Message typing events
   /*  const messageInput = document.getElementById('message');
@@ -499,7 +535,7 @@
 
             // Create the form element
             let form = document.createElement('form');
-
+            form.setAttribute('onsubmit', 'handlecreateGroup(event)'); // Add onsubmit attribute
             // Create the text field for the group chat name
             let groupNameInput = document.createElement('input');
             groupNameInput.setAttribute('type', 'text');
@@ -549,6 +585,50 @@
 
         }
 
+
+        function handlecreateGroup(event){
+             let hiddenWindow = document.querySelector('.hidden-window-form');
+            // Toggle the active class of the hidden window
+            hiddenWindow.classList.toggle('active');
+            event.preventDefault();
+                let form = event.target;
+               // Get the group name from the input field
+                let groupName = form.querySelector('input[name="group-name"]').value;
+
+                // Get all checked checkboxes for users
+                let checkedCheckboxes = form.querySelectorAll('input[type="checkbox"]:checked');
+
+                // Initialize arrays to store user names and their corresponding user IDs
+                let selectedUsers = [];
+                let selectedUserIds = [];
+
+                // Loop through checked checkboxes to gather user data
+                checkedCheckboxes.forEach(function (checkbox) {
+                    // Get the label associated with the checkbox (which contains the username)
+                    let label = checkbox.nextElementSibling;
+
+                    // Get the hidden input element containing the user ID
+                    let hiddenInput = label.nextElementSibling;
+
+                    // Push username and user ID to respective arrays
+                    selectedUsers.push(label.textContent);
+                    selectedUserIds.push(hiddenInput.value);
+                });
+
+                // Now you have groupName, selectedUsers, and selectedUserIds containing the required data
+               // console.log("Group Name:", groupName);
+                //console.log("Selected Users:", selectedUsers);
+                //console.log("Selected User IDs:", selectedUserIds);
+
+                form.reset();
+                socket.emit("creategroup",{groupName,selectedUsers,selectedUserIds});
+                // socket.emit('getcurrentchat', { receiverid, userid });
+                socket.on('groupcreated',(data)=>{
+                    //console.log(data);
+                    addUsersandGroups(data, true);
+                
+                });
+        }
 
 
 </script>

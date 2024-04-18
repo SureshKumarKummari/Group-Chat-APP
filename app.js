@@ -38,13 +38,12 @@ app.use(message);
 io.on('connection', (socket) => {
  
  console.log('New client connected', socket.handshake.query.userid);
-
     // Joining the room based on the user ID
     socket.join(socket.handshake.query.userid);
 
     // Handling message event
     socket.on('message', async ({ senderid, receiverid, message }) => {
-        console.log('Received message:', { senderid, receiverid, message });
+       // console.log('Received message:', { senderid, receiverid, message });
         try {
             // Store the message in the database
             const newMessage = await messages.create({
@@ -99,7 +98,7 @@ io.on('connection', (socket) => {
           }).then(groupData => {
         // console.log(groupData);
         // Send the retrieved user and group data to the client
-        console.log(groupData);
+        //console.log(groupData);
         socket.emit('usersdata', { users: userData,groups: groupData });
        });
     } catch (error) {
@@ -162,11 +161,16 @@ socket.on('getlinkstojoin',async(userid)=>{
             attributes: ['group_id'],
             where:{'userid':userid},
         });
+        const groupIdsArray = groupids.map(item => item.group_id);
 
-        const linkstojoin=await groups.findAll({
-          attributes:[['id',group_id],['name',group_name]],
-          where:{id:[groupids]}
-        })
+// Now use the extracted group IDs in the where clause of the second query
+        const linkstojoin = await groups.findAll({
+            attributes: [['id', 'group_id'], ['name', 'group_name']],
+            where: {
+              id: groupIdsArray
+            } 
+        });
+        //console.log(linkstojoin);
         // Send the list of users to the client
         socket.emit('linkstojoin',linkstojoin);
     } catch (error) {
@@ -176,6 +180,63 @@ socket.on('getlinkstojoin',async(userid)=>{
 
 
 });
+
+
+ socket.on('addtogroup',async(groupid)=>{
+  //console.log(groupId);
+  let user=socket.handshake.query.userid;
+  await group_members.create({userId:user, groupId:groupid});
+
+  const link=await links.findOne({where:{userid:user,group_id:groupid}})
+  link.destroy();
+  //userid,group_id
+
+  socket.emit('okaddgroup',groupid);
+
+
+ });
+
+
+
+
+
+
+socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds})=>{
+ // console.log(connecteduserid,groupName,selectedUsers,selectedUserIds);
+ try{
+ let connecteduserid=Number(socket.handshake.query.userid);
+  const group = await groups.create({
+    name: groupName,
+    adminId: connecteduserid
+  });
+  let gid=Number(group.id);
+  const GroupMember =await  group_members.create({
+      userId: connecteduserid,
+      groupId: gid
+    });
+
+    //const creatinglinks=links.bulkCreate({})
+    const selectedUserIdsExcludingConnected = selectedUserIds.filter(id => Number(id) != connecteduserid);
+    //console.log(selectedUserIdsExcludingConnected,gid);
+    const createdlinks=await links.bulkCreate(selectedUserIdsExcludingConnected.map(userId => ({
+      userid:Number(userId),
+      group_id: gid
+    })));
+
+   // console.log(createdlinks);
+  //group_id=groups.length+1
+  //group_members - userid-userid,groupId-group_id - admin adding done
+  //groups - name-groupName,adminId-connecteduserid -done
+  //links - userId-for i in selectedUserIds except connecteduserId ,groups.length+1
+    let data={user_id:gid,username:groupName} ;
+    socket.emit('groupcreated',(data));
+  }
+  catch(err){
+    console.log("Cannot create Group",err);
+  }
+})
+
+
 
 
 
