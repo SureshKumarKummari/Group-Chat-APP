@@ -163,6 +163,8 @@
 
 
 //to select chat with different person or group
+    localStorage.setItem('isgroup', false);
+
     function handlechat(buttonElement) {
 
         let chatwindow = document.getElementById('changecol');
@@ -178,7 +180,12 @@
         const hiddenvalue=hiddenElement.value;
         // Get the image source
         let imageUrl = imgElement.getAttribute('src');
-
+        if(imageUrl==='./group.jpg'){
+           // console.log('it is group');
+            localStorage.setItem('isgroup',true);
+        }else{
+            localStorage.setItem('isgroup', false);   
+        }
         // Get the username from the h6 element
         let username = h6Element.textContent;
 
@@ -375,8 +382,9 @@
         //console.log(receiverid);
         let senderid = localStorage.getItem('userid');
         //console.log(receiverid,senderid);
+        let isgroup= localStorage.getItem('isgroup');
         socket.emit('joinRoom',Number(receiverid));
-        socket.emit('message', {senderid,receiverid,message});
+        socket.emit('message', {senderid,receiverid,message,isgroup});
         addSentMessage(message);
     }
 
@@ -409,8 +417,9 @@
     function displaychat(receiverid) {
             let d = document.getElementById('msg-page');
             d.innerHTML="";
-            let userid = localStorage.getItem('userid')
-            socket.emit('getcurrentchat', { receiverid, userid });
+            let userid = localStorage.getItem('userid');
+            let isgroup = localStorage.getItem('isgroup');
+            socket.emit('getcurrentchat', { receiverid, userid,isgroup });
         }
     
         socket.on('currentchat',(data)=>{

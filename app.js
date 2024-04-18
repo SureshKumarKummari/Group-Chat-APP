@@ -42,16 +42,25 @@ io.on('connection', (socket) => {
     socket.join(socket.handshake.query.userid);
 
     // Handling message event
-    socket.on('message', async ({ senderid, receiverid, message }) => {
+    socket.on('message', async ({ senderid, receiverid, message,isgroup }) => {
        // console.log('Received message:', { senderid, receiverid, message });
         try {
             // Store the message in the database
+            if(!isgroup){
             const newMessage = await messages.create({
                 senderId: Number(senderid),
                 receiverId: Number(receiverid),
                 content: message
             });
-
+          }else{
+             const newMessage = await messages.create({
+                senderId: Number(senderid),
+                receiverId: 0,// Number(receiverid),
+                content: message,
+                isGroup:isgroup,
+                Group_id: Number(receiverid)
+            });
+          }
             // Emit the message to the receiver's room
             io.to(receiverid).emit('message', message);
         } catch (error) {
@@ -110,21 +119,33 @@ io.on('connection', (socket) => {
 
 //getting previous messages
 
-socket.on('getcurrentchat', async ({ receiverid, userid }) => {
+socket.on('getcurrentchat', async ({ receiverid, userid,isgroup }) => {
     try {
         // Fetch messages exchanged between the specified users
-        const chatMessages = await messages.findAll({
-            where: {
-                [Sequelize.Op.or]: [
-                    { senderId: userid, receiverId: receiverid },
-                    { senderId: receiverid, receiverId: userid }
-                ]
-            },
-            order: [['createdAt', 'ASC']], 
-         });
+        let chatMessages;
+        //console.log(isgroup);
+        if(!isgroup){
+          chatMessages = await messages.findAll({
+              where: {
+                    [Sequelize.Op.and]: [{
+                      [Sequelize.Op.or]: [{ senderId: userid, receiverId: receiverid },{ senderId: receiverid, receiverId: userid }]
+                      },{isGroup: false}
+                    ]},
+              order: [['createdAt', 'ASC']], 
+          });
 
 
-         let finalchat=chatMessages.map(message=>{return message.dataValues});
+        }else{
+        //console.log("i am in group query");
+        chatMessages = await messages.findAll({
+              where: {Group_id:receiverid,
+              },
+              order: [['createdAt', 'ASC']], 
+          });
+
+        }
+        //console.log(chatMessages);
+         //let finalchat=chatMessages.map(message=>{return message.dataValues});
         // Emit the formatted messages to the client
         socket.emit('currentchat', chatMessages);
     } catch (error) {

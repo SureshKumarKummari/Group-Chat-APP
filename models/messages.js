@@ -35,7 +35,7 @@ const Message = sequelize.define('message', {
     // Define a boolean field to indicate whether the receiver is a user or a group
     isGroup: {
         type: Sequelize.BOOLEAN,
-        allowNull: false,
+        //allowNull: false,
         defaultValue: false // Default to false (receiver is a user)
     },
     Group_id:{
