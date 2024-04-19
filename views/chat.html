@@ -113,9 +113,11 @@
     </div>
    
 
-<script src="./chat.js"></script>"
+<script src="./chat.js"></script>
 
 <script src="./messages.js"></script>
+
+<script src="./sidebar.js"></script>
 
 </body>
 <script src="../node_modules/socket.io/client-dist/socket.io.js"></script>
@@ -129,55 +131,6 @@
                 }
             });
 
-
-
-
-  /*  function saveuserinfo(){
-        let d=document.getElementById('hidden');
-            let usernameP = document.createElement('p');
-            let emailP = document.createElement('p');
-            let phoneP = document.createElement('p');
-        
-            // Set the text content of each p element to the corresponding data field
-            usernameP.textContent = "Username: " + localStorage.getItem('username');
-            emailP.textContent = "Email: " + localStorage.getItem('email');
-            phoneP.textContent = "Phone: " + localStorage.getItem('phone');
-            // Append the p elements to the d element
-            d.appendChild(usernameP);
-            d.appendChild(emailP);
-            d.appendChild(phoneP);
-
-    }
-
-    saveuserinfo();
-
-//displaying user-data hidden window
-    function showuserinfo(event){
-            let parentLi = event.target.closest('li');
-
-            let hiddenWindow = parentLi.querySelector('.hidden-window');
-            // Toggle the active class of the hidden window
-            hiddenWindow.classList.toggle('active');
-    }
-
-    //showing userform - for adding new group
-
-    function showuserform(event){
-        let div = event.target.closest('div');
-        let hiddenWindow = div.querySelector('.hidden-window-form');
-        // Toggle the active class of the hidden window
-        hiddenWindow.classList.toggle('active');
-    }
-
-    
-    function showlinkstojoingroup(event){
-        let div = event.target.closest('div');
-        let hiddenWindow = div.querySelector('.hidden-window-join');
-       // console.log(hiddenWindow);
-        // Toggle the active class of the hidden window
-        hiddenWindow.classList.toggle('active');
-    }
-*/
 
 
 //to select chat with different person or group
@@ -317,148 +270,6 @@
         hiddenWindow.classList.toggle('active');
     }
 
-
-   /*  function addreceivedMessage(message) {
-
-        let d = document.getElementById('msg-page');
-
-        // Create the necessary DOM elements
-        let receivedChatsDiv = document.createElement('div');
-        receivedChatsDiv.classList.add('received-chats');
-
-        let receivedChatsImgDiv = document.createElement('div');
-        receivedChatsImgDiv.classList.add('received-chats-img');
-
-        let img = document.createElement('img');
-        img.setAttribute('src', './user.jpg');
-
-        let receivedMsgDiv = document.createElement('div');
-        receivedMsgDiv.classList.add('received-msg');
-
-        let receivedMsgInboxDiv = document.createElement('div');
-        receivedMsgInboxDiv.classList.add('received-msg-inbox');
-
-        let p = document.createElement('p');
-        p.classList.add('single-msg');
-        p.textContent = message;
-
-        let span = document.createElement('span');
-        span.classList.add('time');
-        span.textContent = '18:31 PM | July 24';
-
-        // Append the elements to the appropriate parent elements
-        receivedMsgInboxDiv.appendChild(p);
-        receivedMsgInboxDiv.appendChild(span);
-
-        receivedMsgDiv.appendChild(receivedMsgInboxDiv);
-
-        receivedChatsImgDiv.appendChild(img);
-
-        receivedChatsDiv.appendChild(receivedChatsImgDiv);
-        receivedChatsDiv.appendChild(receivedMsgDiv);
-
-        // Append the whole structure to the target element
-        d.appendChild(receivedChatsDiv);
-
-    }
-
-
-     function addSentMessage(message) {
-        let d = document.getElementById('msg-page');
-
-        // Create the necessary DOM elements
-        let outgoingChatsDiv = document.createElement('div');
-        outgoingChatsDiv.classList.add('outgoing-chats');
-
-        let outgoingChatsImgDiv = document.createElement('div');
-        outgoingChatsImgDiv.classList.add('outgoing-chats-img');
-
-        let img = document.createElement('img');
-        img.setAttribute('src', './user.jpg');
-
-        let outgoingMsgDiv = document.createElement('div');
-        outgoingMsgDiv.classList.add('outgoing-msg');
-
-        let outgoingMsgInboxDiv = document.createElement('div');
-        outgoingMsgInboxDiv.classList.add('outgoing-chats-msg');
-
-        let p = document.createElement('p');
-        p.classList.add('multi-msg');
-        p.textContent = message;
-
-        let span = document.createElement('span');
-        span.classList.add('time');
-        span.textContent = '18:30 PM | July 24';
-
-        // Append the elements to the appropriate parent elements
-        outgoingMsgInboxDiv.appendChild(p);
-        outgoingMsgInboxDiv.appendChild(span);
-
-        outgoingMsgDiv.appendChild(outgoingMsgInboxDiv);
-
-        outgoingChatsImgDiv.appendChild(img);
-
-        outgoingChatsDiv.appendChild(outgoingChatsImgDiv);
-        outgoingChatsDiv.appendChild(outgoingMsgDiv);
-
-        // Append the whole structure to the target element
-        d.appendChild(outgoingChatsDiv);
-
-
-    }*/
-
-//Adding users and groups to sidebar
-    function addUsersandGroups(data,isgroup){
-        let ul=document.getElementById('usersandgroups');
-
-            let li = document.createElement('li');
-            li.classList.add('list-group-item');
-
-            // Create the button element
-            let button = document.createElement('button');
-            button.classList.add('btn', 'd-flex', 'align-items-center');
-            button.setAttribute('onclick', 'handlechat(this)');
-
-            // Create the div elements for avatar and user details
-            let avatarDiv = document.createElement('div');
-            avatarDiv.classList.add('col-2');
-            avatarDiv.style.paddingRight="30px";
-            let userDiv = document.createElement('div');
-            userDiv.classList.add('col');//col
-
-            // Create the avatar image
-            let avatarImg = document.createElement('img');
-            if(isgroup){
-                avatarImg.setAttribute('src', './group.jpg');
-            }else{
-            avatarImg.setAttribute('src', './user.jpg');
-            }
-            avatarImg.setAttribute('alt', 'avatar');
-            avatarDiv.appendChild(avatarImg);
-
-            // Create the user name element
-            let userName = document.createElement('h6');
-            userName.textContent = data.username;
-            userDiv.appendChild(userName);
-
-            // Create the hidden input field for user ID
-            let hiddenInput = document.createElement('input');
-            hiddenInput.setAttribute('type', 'hidden');
-            hiddenInput.setAttribute('name', 'hiddenid');
-            hiddenInput.setAttribute('value', data.user_id);
-
-            // Append the div elements to the button
-            button.appendChild(avatarDiv);
-            button.appendChild(document.createElement('div')); // Placeholder for col-2
-            button.appendChild(userDiv);
-            button.appendChild(hiddenInput); // Append the hidden input field
-
-            // Append the button to the li element
-            li.appendChild(button);
-
-            // Append the li element to the ul
-            ul.appendChild(li);
-    }
    
 
     function handleSubmit() {

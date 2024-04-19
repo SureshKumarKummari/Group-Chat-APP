@@ -16,7 +16,7 @@ function saveuserinfo(){
     }
 
     saveuserinfo();
-
+//hidden-window for showing logged in user's profile        
       function showuserinfo(event){
             let parentLi = event.target.closest('li');
 
@@ -25,6 +25,7 @@ function saveuserinfo(){
             hiddenWindow.classList.toggle('active');
     }
 
+//hidden-window for creating new group by selecting users we want in the group
 function showuserform(event){
         let div = event.target.closest('div');
         let hiddenWindow = div.querySelector('.hidden-window-form');
@@ -32,7 +33,7 @@ function showuserform(event){
         hiddenWindow.classList.toggle('active');
     }
 
-
+//hidden window for joining groups via invitations
     function showlinkstojoingroup(event){
         let div = event.target.closest('div');
         let hiddenWindow = div.querySelector('.hidden-window-join');
@@ -42,5 +43,3 @@ function showuserform(event){
     }
 
 
-
-//module.exports={saveuserinfo,showuserinfo};
