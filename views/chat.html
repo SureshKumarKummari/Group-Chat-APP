@@ -386,7 +386,30 @@
         socket.emit('joinRoom',Number(receiverid));
         socket.emit('message', {senderid,receiverid,message,isgroup});
         addSentMessage(message);
+        //socket.on('message', (data) => {
+            //console.log('Received message:', data);
+          // let crnt= localStorage.getItem('currentreceiverorgroup');
+           //console.log(crnt,receiverid,crnt===receiverid);
+           //if(crnt===receiverid) {
+            //addreceivedMessage(data);
+           //}
+        //});
     }
+
+    socket.on('message', (data) => {
+            //console.log('Received message:', data);
+            let crnt = localStorage.getItem('currentreceiverorgroup');
+            let isgroup=localStorage.getItem('isgroup');
+            //console.log(data);
+            if (crnt == Number(data.receiverid) && isgroup.toString()==isgroup) {
+                //console.log("hi");
+                //console.log(data,data.message);
+               addreceivedMessage(data.message);
+            }
+        });
+
+
+
 
     function getusersdata() {
         let userid=localStorage.getItem('userid');
@@ -409,10 +432,10 @@
 
     getusersdata();
     
-    socket.on('message', (data) => {
+    //socket.on('message', (data) => {
         //console.log('Received message:', data);
-        addreceivedMessage(data);
-    });
+      //  addreceivedMessage(data);
+    //});
 
     function displaychat(receiverid) {
             let d = document.getElementById('msg-page');

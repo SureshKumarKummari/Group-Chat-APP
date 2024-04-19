@@ -46,12 +46,16 @@ io.on('connection', (socket) => {
        // console.log('Received message:', { senderid, receiverid, message });
         try {
             // Store the message in the database
+            const resultmessage={message:message,receiverid:receiverid,isgroup:isgroup};
             if(!isgroup){
             const newMessage = await messages.create({
                 senderId: Number(senderid),
                 receiverId: Number(receiverid),
                 content: message
             });
+            // Emit the message to the receiver's room
+            //io.to(receiverid).emit('message', message);
+            io.to(receiverid).emit('message', resultmessage);
           }else{
              const newMessage = await messages.create({
                 senderId: Number(senderid),
@@ -60,16 +64,15 @@ io.on('connection', (socket) => {
                 isGroup:isgroup,
                 Group_id: Number(receiverid)
             });
+  
+             socket.broadcast.emit("message",resultmessage);
+
           }
-            // Emit the message to the receiver's room
-            io.to(receiverid).emit('message', message);
         } catch (error) {
             console.error('Error storing message:', error);
             // Handle error, if any
         }
     });
-
-
 
 
   //live typing
@@ -134,7 +137,6 @@ socket.on('getcurrentchat', async ({ receiverid, userid,isgroup }) => {
               order: [['createdAt', 'ASC']], 
           });
 
-
         }else{
         //console.log("i am in group query");
         chatMessages = await messages.findAll({
@@ -153,7 +155,6 @@ socket.on('getcurrentchat', async ({ receiverid, userid,isgroup }) => {
         // Handle error, if any
     }
 });
-
 
 
 
@@ -243,12 +244,6 @@ socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds})=>{
       userid:Number(userId),
       group_id: gid
     })));
-
-   // console.log(createdlinks);
-  //group_id=groups.length+1
-  //group_members - userid-userid,groupId-group_id - admin adding done
-  //groups - name-groupName,adminId-connecteduserid -done
-  //links - userId-for i in selectedUserIds except connecteduserId ,groups.length+1
     let data={user_id:gid,username:groupName} ;
     socket.emit('groupcreated',(data));
   }
