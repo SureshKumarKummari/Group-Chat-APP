@@ -215,8 +215,25 @@ p {
     /* Add shadow for better visibility */
 }
 
+.hidden-window-admin{
+    position: absolute;
+    top: 25%;
+    left: 60%;
+    width: 200px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+    z-index: 1000;
+        /* Ensure it appears on top of other elements */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+
+
+
 /* Styling for the hidden window when it's active */
 .hidden-window.active,
+.hidden-window-admin.active,
 .hidden-window-form.active,
 .hidden-window-join.active {
     display: block;

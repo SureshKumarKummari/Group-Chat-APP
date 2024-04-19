@@ -253,7 +253,12 @@ socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds})=>{
 })
 
 
+socket.on("getgroupmembers",(groupid)=>{
 
+    console.log(groupid);
+    group_members-groupId,userId
+
+});
 
 
 

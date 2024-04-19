@@ -178,51 +178,63 @@
         let hiddenElement = buttonElement.querySelector('input[type="hidden"]');
         //console.log(hiddenElement.value);
         const hiddenvalue=hiddenElement.value;
-        // Get the image source
         let imageUrl = imgElement.getAttribute('src');
-        if(imageUrl==='./group.jpg'){
-           // console.log('it is group');
-            localStorage.setItem('isgroup',true);
-        }else{
-            localStorage.setItem('isgroup', false);   
-        }
+        
         // Get the username from the h6 element
-        let username = h6Element.textContent;
+        //let username = h6Element.textContent;
 
-        // Clear the header contents
         let header = document.getElementById('header');
         header.innerHTML = "";
+        const b = buttonElement.cloneNode(true);
+        b.classList.add('msg-header');
+        b.classList.add('container1');
+        b.removeAttribute('onclick');
+        // b.removeAttribute('mouseover');
 
-        // Create elements
-        let msgHeaderDiv = document.createElement('div');
-        msgHeaderDiv.classList.add('msg-header');
+        if (imageUrl === './group.jpg') {
+            localStorage.setItem('isgroup', true);
 
-        let container1Div = document.createElement('div');
-        container1Div.classList.add('container1');
+             let button = document.createElement('button');
+            button.classList.add('btn-primary');
+            button.classList.add('col-2');
+            button.textContent = "Admin Operations";
+            button.addEventListener('click', (e) => {
+                handleadmin(e);
+            });
+            button.style.overflow = "hidden";
 
-        let col2Div = document.createElement('div');
-        col2Div.classList.add('col-2');
+            let div = document.createElement("div");
+            div.setAttribute("id", "hidden-admin");
+            div.classList.add("hidden-window-admin");
+            div.textContent = "You are not Admin";
+            button.appendChild(div);
+            b.appendChild(button);
 
-        let img = document.createElement('img');
-        img.src = imageUrl;
-        img.alt = 'avatar';
-        img.classList.add('msgimg');
+        } else {
+            localStorage.setItem('isgroup', false);
+        }
 
-        let activeDiv = document.createElement('div');
-        activeDiv.classList.add('active');
-        let p = document.createElement('p');
-        p.textContent = username;
-        activeDiv.appendChild(p);
+        header.appendChild(b);
+        
+        localStorage.setItem('currentreceiverorgroup', hiddenvalue);
+        displaychat(hiddenvalue);
 
-        // Append elements
-        container1Div.appendChild(col2Div);
-        container1Div.appendChild(img);
-        container1Div.appendChild(activeDiv);
-        msgHeaderDiv.appendChild(container1Div);
-        header.appendChild(msgHeaderDiv);
-        localStorage.setItem('currentreceiverorgroup',hiddenvalue);
-        displaychat(hiddenvalue)
+    }
 
+
+    function getgroupmembers(){
+        //console.log("in groupmembers");
+        socket.emit("getgroupmembers",localStorage.getItem('currentreceiverorgroup'));
+    }
+
+
+
+    function handleadmin(e){
+       // getgroupmembers();
+        console.log("handle admin is clicked");
+         let div = event.target.closest('div');
+        let hiddenWindow = div.querySelector('.hidden-window-admin');
+        hiddenWindow.classList.toggle('active');
     }
 
 
