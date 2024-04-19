@@ -112,6 +112,11 @@
         </div>
     </div>
    
+
+<script src="./chat.js"></script>"
+
+<script src="./messages.js"></script>
+
 </body>
 <script src="../node_modules/socket.io/client-dist/socket.io.js"></script>
 <script>
@@ -127,7 +132,7 @@
 
 
 
-    function saveuserinfo(){
+  /*  function saveuserinfo(){
         let d=document.getElementById('hidden');
             let usernameP = document.createElement('p');
             let emailP = document.createElement('p');
@@ -164,6 +169,7 @@
         hiddenWindow.classList.toggle('active');
     }
 
+    
     function showlinkstojoingroup(event){
         let div = event.target.closest('div');
         let hiddenWindow = div.querySelector('.hidden-window-join');
@@ -171,7 +177,7 @@
         // Toggle the active class of the hidden window
         hiddenWindow.classList.toggle('active');
     }
-
+*/
 
 
 //to select chat with different person or group
@@ -244,15 +250,55 @@
     socket.on('allgroupmembers', (data) => {
         let hidden = document.getElementById("hidden-admin");
         hidden.innerHTML = "";
-        let ul = document.createElement("ul");
+        let ul = document.createElement("ol");
         for (let i = 0; i < data.length; i++) {
             console.log(data[i]);
             let li = document.createElement("li");
-            li.textContent = `${data[i].username}`;
+            li.style.overflow="hidden";
+            //li.style.overflow="scroll";
+            //li.style.marginBlock="20px";
+            li.classList.add("list-item");
+            li.classList.add("row");
+            li.style.marginBottom="10px";
+
+            li.style.border = "1px solid #ccc";
+            if(data[i].isadmin){
+                li.innerHTML= `<b class="col-4">${data[i].username}</b><b class="col-7"> -- Admin user</b>`;
+            }else{
+                li.innerHTML=` <b class="col-4">${data[i].username}</b> 
+                    <a href="#" class="col-4" name="${data[i].user_id}" onclick="removeUser(event)">Remove</a>
+                    <a href="#" class="col-4" key="${data[i].username}" name="${data[i].user_id}" onclick="createAdmin(event)">Create Admin</a>`;
+            }
             ul.appendChild(li);
         }
         hidden.appendChild(ul);
     });
+
+
+    function removeUser(event){
+        event.stopPropagation();
+        //console.log("remove user called",Number(event.target.name));
+        let id=Number(event.target.name);
+        let group_id=localStorage.getItem("currentreceiverorgroup");
+       // socket.emit("removeuser",{id,group_id});
+         //event.target.parentNode.removeChild();
+         event.target.parentNode.remove();
+
+    }
+
+    function createAdmin(event) {
+             event.stopPropagation();
+           // console.log("create Admin is called", Number(event.target.name));
+           let id=Number(event.target.name);
+           let group_id = localStorage.getItem("currentreceiverorgroup");
+          // socket.emit("makeadmin",{id,group_id});
+           //event.target.parentNode.removeChild();
+           let username=event.target.getAttribute("key");
+           let li= event.target.parentNode;
+           li.innerHTML="";
+           li.innerHTML=`<b class="col-4">${username}</b><b class="col-7"> -- Admin user</b>`;
+
+        }
 
 
 
@@ -261,7 +307,8 @@
        
        // getgroupmembers();
        // console.log("handle admin is clicked");
-         let div = event.target.closest('div');
+       e.stopPropagation();
+         let div = e.target.closest('div');//event
         let hiddenWindow = div.querySelector('.hidden-window-admin');
          if (! hiddenWindow.classList.contains('active')) {
             getgroupmembers();
@@ -271,7 +318,7 @@
     }
 
 
-    function addreceivedMessage(message) {
+   /*  function addreceivedMessage(message) {
 
         let d = document.getElementById('msg-page');
 
@@ -316,7 +363,7 @@
     }
 
 
-    function addSentMessage(message) {
+     function addSentMessage(message) {
         let d = document.getElementById('msg-page');
 
         // Create the necessary DOM elements
@@ -358,7 +405,7 @@
         d.appendChild(outgoingChatsDiv);
 
 
-    }
+    }*/
 
 //Adding users and groups to sidebar
     function addUsersandGroups(data,isgroup){
@@ -472,10 +519,6 @@
 
     getusersdata();
     
-    //socket.on('message', (data) => {
-        //console.log('Received message:', data);
-      //  addreceivedMessage(data);
-    //});
 
     function displaychat(receiverid) {
             let d = document.getElementById('msg-page');

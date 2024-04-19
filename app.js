@@ -261,7 +261,7 @@ socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds})=>{
 socket.on("getgroupmembers",async(groupid)=>{
   try{
 
-    console.log(groupid);
+   // console.log(groupid);
     let all=await group_members.findAll({
                   attributes:['userId'],where:{groupId:groupid}});
     let admins=await new_admins.findAll({attributes:['adminId'],where:{group_id:groupid}});
@@ -271,7 +271,7 @@ socket.on("getgroupmembers",async(groupid)=>{
            const memberIds = all.map(member => member.userId);
             const adminIds = new Set(admins.map(admin => admin.adminId));
 
-          console.log(memberIds, adminIds);
+         // console.log(memberIds, adminIds);
           all=memberIds.map((id)=>{
                 if(adminIds.has(id)){
                   return {user_id:id,isadmin:true}
@@ -280,7 +280,7 @@ socket.on("getgroupmembers",async(groupid)=>{
                 }
           })
 
-          console.log(all);
+         // console.log(all);
 
         let allgroupmembers = await Promise.all(all.map(async (row) => {
             const usernameQuery = await users.findOne({
@@ -302,6 +302,41 @@ socket.on("getgroupmembers",async(groupid)=>{
 
 
 
+
+socket.on("removeuser",async({id,group_id})=>{
+
+  try{
+    let user=await group_members.findOne({where:{userId:id,groupId:group_id}});
+     if(user){
+          user.destroy();
+          console.log("user deleted successully");
+    }else{
+      throw err;
+    }
+  }catch(err){
+      console.log("Cannot delete user ",err);
+  }
+
+});
+
+
+
+socket.on("makeadmin",async({id,group_id})=>{
+
+  try{
+    let admin=await new_admins.create({group_id:group_id,adminId:id});
+    if(admin){
+    console.log("Admin created successully");
+    }else{
+      throw err;
+    }
+  }catch(err){
+      console.log("Cannot delete user ",err);
+  }
+
+
+
+});
 
 
 });
