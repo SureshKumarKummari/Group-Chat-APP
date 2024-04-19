@@ -262,20 +262,34 @@ socket.on("getgroupmembers",async(groupid)=>{
   try{
 
     console.log(groupid);
-    let all=await group_members.findAll({where:{groupId:groupid},
-                                    include:[{
-                                      model:new_admins,
-                                      where:{group_id:groupid},
-                                      required:false,
-                                    },],
-                                  });
+    let all=await group_members.findAll({
+                  attributes:['userId'],where:{groupId:groupid}});
+    let admins=await new_admins.findAll({attributes:['adminId'],where:{group_id:groupid}});
+
+          //console.log(all,admins);
+
+           const memberIds = all.map(member => member.userId);
+            const adminIds = new Set(admins.map(admin => admin.adminId));
+
+          console.log(memberIds, adminIds);
+          all=memberIds.map((id)=>{
+                if(adminIds.has(id)){
+                  return {user_id:id,isadmin:true}
+                }else{
+                  return {user_id:id,isadmin:false}
+                }
+          })
+
+          console.log(all);
+
         let allgroupmembers = await Promise.all(all.map(async (row) => {
             const usernameQuery = await users.findOne({
-                where: { user_id: row.userId },
+                where: { user_id: row.user_id },
                 attributes: ['username'],
             });
-            return { username: usernameQuery.username, user_id: row.userId };
+            return { username: usernameQuery.username, user_id: row.user_id,isadmin:row.isadmin };
           }));
+
 
        // console.log(allgroupmembers);
           socket.emit('allgroupmembers', allgroupmembers);
