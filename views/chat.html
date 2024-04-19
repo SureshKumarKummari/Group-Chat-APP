@@ -115,6 +115,18 @@
 </body>
 <script src="../node_modules/socket.io/client-dist/socket.io.js"></script>
 <script>
+
+
+         let userid = localStorage.getItem('userid');
+            const socket = io('http://localhost:4000', {
+                query: {
+                    userid: Number(userid)
+                }
+            });
+
+
+
+
     function saveuserinfo(){
         let d=document.getElementById('hidden');
             let usernameP = document.createElement('p');
@@ -164,6 +176,7 @@
 
 //to select chat with different person or group
     localStorage.setItem('isgroup', false);
+    localStorage.setItem('currentreceiverorgroup', 0);
 
     function handlechat(buttonElement) {
 
@@ -223,17 +236,37 @@
 
 
     function getgroupmembers(){
-        //console.log("in groupmembers");
+       // console.log("in groupmembers");
+        //console.log(localStorage.getItem('currentreceiverorgroup'));
         socket.emit("getgroupmembers",localStorage.getItem('currentreceiverorgroup'));
     }
+
+    socket.on('allgroupmembers', (data) => {
+        let hidden = document.getElementById("hidden-admin");
+        hidden.innerHTML = "";
+        let ul = document.createElement("ul");
+        for (let i = 0; i < data.length; i++) {
+            console.log(data[i]);
+            let li = document.createElement("li");
+            li.textContent = `${data[i].username}`;
+            ul.appendChild(li);
+        }
+        hidden.appendChild(ul);
+    });
+
 
 
 
     function handleadmin(e){
+       
        // getgroupmembers();
-        console.log("handle admin is clicked");
+       // console.log("handle admin is clicked");
          let div = event.target.closest('div');
         let hiddenWindow = div.querySelector('.hidden-window-admin');
+         if (! hiddenWindow.classList.contains('active')) {
+            getgroupmembers();
+        }
+       // console.log(hiddenWindow.classList.contains('active'));
         hiddenWindow.classList.toggle('active');
     }
 
@@ -379,13 +412,7 @@
             // Append the li element to the ul
             ul.appendChild(li);
     }
-    let userid = localStorage.getItem('userid');
-    const socket = io('http://localhost:4000', {
-            query: {
-                userid: Number(userid)
-            }
-        });
-
+   
 
     function handleSubmit() {
         const message = document.getElementById('message').value;
@@ -437,6 +464,7 @@
             }
             //console.log(data.groups,data.users);
             for (let i = 0; i < data.groups.length; i++) {
+                //console.log(data.groups);
                  addUsersandGroups(data.groups[i],true);
             }
 

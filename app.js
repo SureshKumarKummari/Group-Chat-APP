@@ -8,6 +8,7 @@ const messages = require('./models/messages');
 const groups = require('./models/groups');
 const group_members = require('./models/group_members');
 const links=require('./models/links');
+const new_admins=require('./models/new_admins');
 
 const auth=require('./middleware/userauthentication');
 
@@ -104,8 +105,8 @@ io.on('connection', (socket) => {
                 //attributes: ['id', 'name', 'adminId'] // Select specific attributes of groups
                 attributes: [
                   ['id', 'user_id'],    // Alias 'user_id' for 'id'
-                  ['name', 'username'], // Alias 'user_name' for 'name'
-                  'adminId']
+                  ['name', 'username']], // Alias 'user_name' for 'name'
+                 // 'adminId']
               });
           }).then(groupData => {
         // console.log(groupData);
@@ -229,14 +230,18 @@ socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds})=>{
  let connecteduserid=Number(socket.handshake.query.userid);
   const group = await groups.create({
     name: groupName,
-    adminId: connecteduserid
+    //adminId: connecteduserid
   });
   let gid=Number(group.id);
   const GroupMember =await  group_members.create({
       userId: connecteduserid,
       groupId: gid
     });
-
+    const admin=await new_admins.create({
+      group_id:gid,
+      adminId:connecteduserid,
+    })
+    //new_admins -group_id adminId
     //const creatinglinks=links.bulkCreate({})
     const selectedUserIdsExcludingConnected = selectedUserIds.filter(id => Number(id) != connecteduserid);
     //console.log(selectedUserIdsExcludingConnected,gid);
@@ -253,10 +258,31 @@ socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds})=>{
 })
 
 
-socket.on("getgroupmembers",(groupid)=>{
+socket.on("getgroupmembers",async(groupid)=>{
+  try{
 
     console.log(groupid);
-    group_members-groupId,userId
+    let all=await group_members.findAll({where:{groupId:groupid},
+                                    include:[{
+                                      model:new_admins,
+                                      where:{group_id:groupid},
+                                      required:false,
+                                    },],
+                                  });
+        let allgroupmembers = await Promise.all(all.map(async (row) => {
+            const usernameQuery = await users.findOne({
+                where: { user_id: row.userId },
+                attributes: ['username'],
+            });
+            return { username: usernameQuery.username, user_id: row.userId };
+          }));
+
+       // console.log(allgroupmembers);
+          socket.emit('allgroupmembers', allgroupmembers);
+
+  }catch(err){
+    console.log("Cannot get group members",err);
+  }
 
 });
 
@@ -268,6 +294,8 @@ socket.on("getgroupmembers",(groupid)=>{
 
 
 
+group_members.belongsTo(new_admins, { foreignKey: 'group_id' });
+new_admins.hasMany(group_members, { foreignKey: 'groupId' });
 
 
 

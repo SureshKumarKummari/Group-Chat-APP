@@ -14,14 +14,14 @@ const Group = sequelize.define('group', {
         allowNull: false
     },
     // Define foreign key for group admin
-    adminId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: User,
-            key: 'user_id'
-        }
-    }
+    // adminId: {
+    //     type: Sequelize.INTEGER,
+    //     allowNull: false,
+    //     references: {
+    //         model: User,
+    //         key: 'user_id'
+    //     }
+    // }
 });
 
 module.exports = Group;
