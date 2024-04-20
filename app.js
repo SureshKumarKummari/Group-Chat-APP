@@ -141,7 +141,7 @@ socket.on('getcurrentchat', async ({ receiverid, userid,isgroup }) => {
         }else{
         //console.log("i am in group query");
         chatMessages = await messages.findAll({
-              where: {Group_id:receiverid,
+              where: {Group_id:receiverid,isGroup:true,
               },
               order: [['createdAt', 'ASC']], 
           });
@@ -150,6 +150,7 @@ socket.on('getcurrentchat', async ({ receiverid, userid,isgroup }) => {
         //console.log(chatMessages);
          //let finalchat=chatMessages.map(message=>{return message.dataValues});
         // Emit the formatted messages to the client
+        //console.log(chatMessages);
         socket.emit('currentchat', chatMessages);
     } catch (error) {
         console.error('Error fetching chat messages:', error);
@@ -337,6 +338,23 @@ socket.on("makeadmin",async({id,group_id})=>{
 
 
 });
+
+
+
+ socket.on("isadmin",async({userid,groupid})=>{
+      try{
+        console.log(groupid,userid);
+        let admin=await new_admins.findOne({where:{adminId:userid,group_id:groupid}})
+        if(admin){
+        socket.emit('okcheck',true);
+        }else{
+          socket.emit('okcheck',false);
+        }
+      }catch(err){
+        console.log("Something went Wrong!",err);
+      }
+  });
+
 
 
 });

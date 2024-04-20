@@ -137,7 +137,7 @@
     localStorage.setItem('isgroup', false);
     localStorage.setItem('currentreceiverorgroup', 0);
 
-    function handlechat(buttonElement) {
+    async function handlechat(buttonElement) {
 
         let chatwindow = document.getElementById('changecol');
         if (chatwindow.style.display == 'none') {
@@ -165,22 +165,27 @@
 
         if (imageUrl === './group.jpg') {
             localStorage.setItem('isgroup', true);
+            let isgroup=true;
+            let userid=localStorage.getItem('userid');
+            let check=await isadmin(userid,hiddenvalue);
+            console.log(check);
+            if(check){
+                let button = document.createElement('button');
+                button.classList.add('btn-primary');
+                button.classList.add('col-2');
+                button.textContent = "Admin Operations";
+                button.addEventListener('click', (e) => {
+                    handleadmin(e);
+                });
+                button.style.overflow = "hidden";
 
-             let button = document.createElement('button');
-            button.classList.add('btn-primary');
-            button.classList.add('col-2');
-            button.textContent = "Admin Operations";
-            button.addEventListener('click', (e) => {
-                handleadmin(e);
-            });
-            button.style.overflow = "hidden";
-
-            let div = document.createElement("div");
-            div.setAttribute("id", "hidden-admin");
-            div.classList.add("hidden-window-admin");
-            div.textContent = "You are not Admin";
-            button.appendChild(div);
-            b.appendChild(button);
+                let div = document.createElement("div");
+                div.setAttribute("id", "hidden-admin");
+                div.classList.add("hidden-window-admin");
+                div.textContent = "You are not Admin";
+                button.appendChild(div);
+                b.appendChild(button);
+            }
 
         } else {
             localStorage.setItem('isgroup', false);
@@ -191,6 +196,20 @@
         localStorage.setItem('currentreceiverorgroup', hiddenvalue);
         displaychat(hiddenvalue);
 
+    }
+
+//Checking if current user is admin of the group or not to show admin operations button
+    function isadmin (userid, groupid){
+        console.log(userid,groupid);
+       
+        return new Promise((resolve, reject) => {
+            socket.emit("isadmin", { userid, groupid });
+
+            socket.on("okcheck", (result) => {
+               // console.log(result);
+                resolve(result);
+            });
+        });
     }
 
 
@@ -233,8 +252,7 @@
         //console.log("remove user called",Number(event.target.name));
         let id=Number(event.target.name);
         let group_id=localStorage.getItem("currentreceiverorgroup");
-       // socket.emit("removeuser",{id,group_id});
-         //event.target.parentNode.removeChild();
+        socket.emit("removeuser",{id,group_id});
          event.target.parentNode.remove();
 
     }
@@ -244,7 +262,7 @@
            // console.log("create Admin is called", Number(event.target.name));
            let id=Number(event.target.name);
            let group_id = localStorage.getItem("currentreceiverorgroup");
-          // socket.emit("makeadmin",{id,group_id});
+           socket.emit("makeadmin",{id,group_id});
            //event.target.parentNode.removeChild();
            let username=event.target.getAttribute("key");
            let li= event.target.parentNode;
@@ -336,6 +354,7 @@
             d.innerHTML="";
             let userid = localStorage.getItem('userid');
             let isgroup = localStorage.getItem('isgroup');
+           // console.log(userid, isgroup,receiverid);
             socket.emit('getcurrentchat', { receiverid, userid,isgroup });
         }
     
