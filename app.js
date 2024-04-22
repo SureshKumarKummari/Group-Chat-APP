@@ -22,6 +22,56 @@ require('dotenv').config();
 const admin = require('./routes/admin');
 const message = require('./routes/messages');
 
+
+// cronJob for deleting lst 24 hrs messges
+const cron = require('node-cron');
+const ArchivedMessage = require('./models/archived_messges');
+
+// Define a cron job to run every night at midnight
+cron.schedule('0 0 * * *', async () => {
+    try {
+        // Get messages older than 1 day from the Chat table
+        const oldMessages = await messages.findAll({
+            where: {
+                createdAt: {
+                    [Sequelize.Op.lt]: new Date(new Date() - 24 * 60 * 60 * 1000)
+                }
+            }
+        });
+
+        // Move old messages to the ArchivedChat table
+        for (const message of oldMessages) {
+            await ArchivedMessage.create({
+                content: message.content,
+                senderId: message.senderId,
+                receiverId: message.receiverId,
+                isGroup: message.isGroup,
+                Group_id: message.Group_id,
+                ismedia: message.ismedia,
+                filename: message.filename,
+                fileurl: message.fileurl
+            });
+        }
+
+        // Delete old messages from the Chat table
+        await messages.destroy({
+            where: {
+                createdAt: {
+                    [Sequelize.Op.lt]: new Date(new Date() - 24 * 60 * 60 * 1000)
+                }
+            }
+        });
+
+        console.log('Old messages moved to ArchivedChat table and deleted from Chat table.');
+    } catch (error) {
+        console.error('Error in cron job:', error);
+    }
+});
+
+
+
+
+
 const app = express();
 
 app.use(cors())
