@@ -12,6 +12,8 @@ const new_admins=require('./models/new_admins');
 
 const auth=require('./middleware/userauthentication');
 
+const uploadtoaws=require('./util/uploadingtoaws');
+
 const cors=require('cors');
 
 require('dotenv').config();
@@ -42,50 +44,61 @@ io.on('connection', (socket) => {
     // Joining the room based on the user ID
     socket.join(socket.handshake.query.userid);
 
-    // Handling message event
-    socket.on('message', async ({ senderid, receiverid, message,isgroup }) => {
-       // console.log('Received message:', { senderid, receiverid, message });
-        try {
-            // Store the message in the database
-            const resultmessage={message:message,receiverid:receiverid,isgroup:isgroup};
-            if(!isgroup){
-            const newMessage = await messages.create({
-                senderId: Number(senderid),
-                receiverId: Number(receiverid),
-                content: message
-            });
+  socket.on('message', async ({ senderid, receiverid, message, isgroup, ismedia, fileName }) => {
+    try {
+        // Store the message in the database
+        const resultmessage = { message: message, receiverid: receiverid, isgroup: isgroup };
+
+        if (!isgroup) {
+            if (!ismedia) {
+                const newMessage = await messages.create({
+                    senderId: Number(senderid),
+                    receiverId: Number(receiverid),
+                    content: message
+                });
+            } else {
+                const fileUrl = await uploadtoaws.uploadtoS3(message, fileName);
+                await messages.create({
+                    fileurl: fileUrl,
+                    filename: fileName,
+                    senderId: Number(senderid),
+                    receiverId: Number(receiverid),
+                    content: "File"
+                });
+            }
+
             // Emit the message to the receiver's room
-            //io.to(receiverid).emit('message', message);
             io.to(receiverid).emit('message', resultmessage);
-          }else{
-             const newMessage = await messages.create({
-                senderId: Number(senderid),
-                receiverId: 0,// Number(receiverid),
-                content: message,
-                isGroup:isgroup,
-                Group_id: Number(receiverid)
-            });
-  
-             socket.broadcast.emit("message",resultmessage);
+        } else {
+            if (!ismedia) {
+                const newGroupMessage = await messages.create({
+                    senderId: Number(senderid),
+                    receiverId: Number(receiverid),
+                    content: message,
+                    isGroup: isgroup,
+                    Group_id: Number(receiverid)
+                });
+            } else {
+                const fileUrl = await uploadtoaws.uploadtoS3(message, fileName);
+                await messages.create({
+                    fileurl: fileUrl,
+                    filename: fileName,
+                    senderId: Number(senderid),
+                    receiverId: Number(receiverid),
+                    content: "File",
+                    isGroup: isgroup,
+                    Group_id: Number(receiverid)
+                });
+            }
 
-          }
-        } catch (error) {
-            console.error('Error storing message:', error);
-            // Handle error, if any
+            socket.broadcast.emit("message", resultmessage);
         }
-    });
+    } catch (error) {
+        console.error('Error storing message:', error);
+        // Handle error, if any
+    }
+});
 
-
-  //live typing
-// socket.on('typing', () => {
-//   console.log("User started typing");
-//   socket.broadcast.emit('user typing', socket.id);
-// });
-
-// socket.on('stop typing', () => {
-//   console.log("User stopped typing!");
-//   socket.broadcast.emit('user stopped typing', socket.id);
-// });
 
 //sending users and groups info
   socket.on('getusersdata', async (id) => {

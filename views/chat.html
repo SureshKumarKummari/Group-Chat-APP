@@ -95,6 +95,7 @@
                             <!-- msg-bottom section -->
                             <div class="msg-bottom">
                                 <div class="input-group">
+                                    <input type="file" class="form-control col" id="myFile" name="filename">
                                     <input type="text" id="message" class="form-control"
                                         placeholder="Type message..." />
 
@@ -291,24 +292,36 @@
    
 
     function handleSubmit() {
-        const message = document.getElementById('message').value;
 
-        let receiverid=localStorage.getItem('currentreceiverorgroup');
+        let receiverid = localStorage.getItem('currentreceiverorgroup');
         //console.log(receiverid);
         let senderid = localStorage.getItem('userid');
         //console.log(receiverid,senderid);
-        let isgroup= localStorage.getItem('isgroup');
-        socket.emit('joinRoom',Number(receiverid));
-        socket.emit('message', {senderid,receiverid,message,isgroup});
+        let isgroup = localStorage.getItem('isgroup');
+        socket.emit('joinRoom', Number(receiverid));
+
+
+        const message = document.getElementById('message').value;
+
+        const fileInput = document.getElementById('myFile');
+        const file = fileInput.files[0];
+        if(file){
+        const fileName = file.name;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+         reader.onload = function () {
+            const base64Data = reader.result;
+            socket.emit('fileAndMessage', { senderid,receiverid,message: base64Data,isgroup,ismedia:true,fileName:fileName});
+            fileInput.value = '';
+        };
+    }else{
+
+        socket.emit('message', {senderid,receiverid,message,isgroup,ismedia:false,fileName:"null"});
+    }
         addSentMessage(message);
-        //socket.on('message', (data) => {
-            //console.log('Received message:', data);
-          // let crnt= localStorage.getItem('currentreceiverorgroup');
-           //console.log(crnt,receiverid,crnt===receiverid);
-           //if(crnt===receiverid) {
-            //addreceivedMessage(data);
-           //}
-        //});
+    
     }
 
     socket.on('message', (data) => {

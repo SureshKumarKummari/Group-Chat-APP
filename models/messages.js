@@ -41,6 +41,18 @@ const Message = sequelize.define('message', {
     Group_id:{
         type: Sequelize.INTEGER,
         defaultValue: 0,
+    },
+    ismedia:{
+        type:Sequelize.BOOLEAN,
+        defaultValue: false,
+    },
+    flename:{
+        type:Sequelize.STRING,
+        defaultValue: "null",
+    },
+    fileurl:{
+        type:Sequelize.STRING,
+        defaultValue: "null",
     }
 });
 
