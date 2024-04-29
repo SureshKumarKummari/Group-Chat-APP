@@ -337,7 +337,7 @@
             if (crnt == Number(data.receiverid) && isgroup.toString()==isgroup) {
                 //console.log("hi");
                 //console.log(data,data.message);
-               addreceivedMessage(data.message);
+               addreceivedMessage(data.message);//data.fileurl
             }
         });
 
@@ -382,9 +382,9 @@
             let uid=localStorage.getItem('userid');
             for(let i=0;i<data.length;i++){
              if(data[i].senderId==uid){
-              addSentMessage(data[i].content);
+              addSentMessage(data[i].content, data[i].fileurl);
              }else{
-              addreceivedMessage(data[i].content);
+              addreceivedMessage(data[i].content, data[i].fileurl);
              }
             }
 

@@ -1,13 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-/*our code
-.s {
-    border: 1px solid #ccc;
-    margin: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 1);
-}*/
-
-
 .avatar {
     width: 50px;
     height: 50px;
@@ -21,12 +13,6 @@
     height: 100%;
     object-fit: cover;
 }
-
-
-/* * {
-    box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
-} */
 
 /* Styling the main container */
 .container {
@@ -65,12 +51,6 @@ img {
 
 /* styling user-name */
 .active {
-    /* width: 150px;
-    float: left;
-    color: black;
-    font-weight: bold;
-    margin: 0 0 0 5px;
-    height: 20%;*/
     vertical-align: middle;
     padding: 10px 10px 10px 10px;
 }
@@ -112,6 +92,7 @@ received-chats-img {
     padding: 0 0 0 10px;
     vertical-align: top;
     width: 92%;
+
 }
 
 .received-msg-inbox {
@@ -149,7 +130,6 @@ p {
 .outgoing-chats-msg p {
     background-color: #3a12ff;
     background-image: linear-gradient(45deg, #ee087f 0%, #DD2A7B 25%, #9858ac 50%, #8134AF 75%, #515BD4 100%);
-    color: #fff;
     border-radius: 10px;
     font-size: 14px;
     color: #fff;
@@ -157,7 +137,8 @@ p {
     width: 100%;
     padding: 1rem;
     box-shadow: rgb(0 0 0 / 25%) 0px 2px 5px 2px;
-}
+} 
+
 
 .outgoing-chats-msg {
     float: right;
@@ -172,30 +153,6 @@ p {
     margin-right: 1rem;
 }
 
-
-
-
-/*.hidden-window,.hidden-window-form {
-    position: absolute;
-    top: 25%;
-    left: 2%;
-    width: 200px;
-    background-color: white;
-    display: none;
-    overflow: hidden;
-    z-index: 1000;*/
-    /* Ensure it appears on top of other elements */
-    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
-/*}*/
-
-
-
-/* CSS to show the hidden window when it's active */
-/*.hidden-window.active,.hidden-form.active {
-    display: block; */
-    /* Add more styling as needed */
-/*}
-*/
 
 
 /* Styling for the hidden window */

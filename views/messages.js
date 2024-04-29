@@ -1,4 +1,4 @@
- function addSentMessage(message) {
+ function addSentMessage(message,fileurl) {
         let d = document.getElementById('msg-page');
 
         // Create the necessary DOM elements
@@ -17,9 +17,26 @@
         let outgoingMsgInboxDiv = document.createElement('div');
         outgoingMsgInboxDiv.classList.add('outgoing-chats-msg');
 
-        let p = document.createElement('p');
-        p.classList.add('multi-msg');
+        // let p = document.createElement('p');
+        // p.classList.add('multi-msg');
+        // p.textContent = message;
+
+        let p;
+        if(fileurl!="null"){
+            console.log("In file",fileurl);
+            p=document.createElement('img');
+            p.style.all="unset";
+            p.style.width="300px";
+            p.style.height="150px";
+            p.setAttribute('alt',"Image");
+            //p.classList.add('single-msg');
+            p.setAttribute('src',fileurl); 
+        }else{
+            console.log(fileurl);
+        p = document.createElement('p');
+        p.classList.add('single-msg');
         p.textContent = message;
+        }
 
         let span = document.createElement('span');
         span.classList.add('time');
@@ -43,7 +60,7 @@
     }
 
 
-     function addreceivedMessage(message) {
+     function addreceivedMessage(message,fileurl) {
 
         let d = document.getElementById('msg-page');
 
@@ -62,10 +79,21 @@
 
         let receivedMsgInboxDiv = document.createElement('div');
         receivedMsgInboxDiv.classList.add('received-msg-inbox');
-
-        let p = document.createElement('p');
+        let p;
+        if(fileurl!="null"){
+            console.log("In file",fileurl);
+            p=document.createElement('img');
+            p.style.all="unset";
+            p.style.width="300px";
+            p.style.height="150px";
+            //p.classList.add('single-msg');
+            p.setAttribute('src',fileurl); 
+        }else{
+            console.log(fileurl);
+        p = document.createElement('p');
         p.classList.add('single-msg');
         p.textContent = message;
+        }
 
         let span = document.createElement('span');
         span.classList.add('time');
