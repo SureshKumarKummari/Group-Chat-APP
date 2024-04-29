@@ -204,7 +204,8 @@
         console.log(userid,groupid);
        
         return new Promise((resolve, reject) => {
-            socket.emit("isadmin", { userid, groupid });
+            const token = localStorage.getItem("token");
+            socket.emit("isadmin", { userid, groupid,token });
 
             socket.on("okcheck", (result) => {
                // console.log(result);
@@ -215,9 +216,9 @@
 
 
     function getgroupmembers(){
-       // console.log("in groupmembers");
-        //console.log(localStorage.getItem('currentreceiverorgroup'));
-        socket.emit("getgroupmembers",localStorage.getItem('currentreceiverorgroup'));
+        const token = localStorage.getItem('token');
+        groupid=localStorage.getItem('currentreceiverorgroup');
+        socket.emit("getgroupmembers",{groupid,token});
     }
 
     socket.on('allgroupmembers', (data) => {
@@ -253,7 +254,8 @@
         //console.log("remove user called",Number(event.target.name));
         let id=Number(event.target.name);
         let group_id=localStorage.getItem("currentreceiverorgroup");
-        socket.emit("removeuser",{id,group_id});
+        const token=localStorage.getItem("token");
+        socket.emit("removeuser",{id,group_id,token});
          event.target.parentNode.remove();
 
     }
@@ -263,7 +265,8 @@
            // console.log("create Admin is called", Number(event.target.name));
            let id=Number(event.target.name);
            let group_id = localStorage.getItem("currentreceiverorgroup");
-           socket.emit("makeadmin",{id,group_id});
+           const token = localStorage.getItem("token");
+           socket.emit("makeadmin",{id,group_id,token});
            //event.target.parentNode.removeChild();
            let username=event.target.getAttribute("key");
            let li= event.target.parentNode;
@@ -305,6 +308,7 @@
 
         const fileInput = document.getElementById('myFile');
         const file = fileInput.files[0];
+        const token=localStorage.getItem('token');
         if(file){
         const fileName = file.name;
 
@@ -313,12 +317,13 @@
 
          reader.onload = function () {
             const base64Data = reader.result;
-            socket.emit('fileAndMessage', { senderid,receiverid,message: base64Data,isgroup,ismedia:true,fileName:fileName});
+            socket.emit('message', { senderid,receiverid,message: base64Data,isgroup,ismedia:true,fileName:fileName,token});
+          //   console.log(senderid, receiverid,base64Data, isgroup,fileName)
             fileInput.value = '';
         };
     }else{
 
-        socket.emit('message', {senderid,receiverid,message,isgroup,ismedia:false,fileName:"null"});
+        socket.emit('message', {senderid,receiverid,message,isgroup,ismedia:false,fileName:"null",token});
     }
         addSentMessage(message);
     
@@ -341,16 +346,17 @@
 
     function getusersdata() {
         let userid=localStorage.getItem('userid');
-        socket.emit('getusersdata', userid);
+        let token=localStorage.getItem('token');
+        socket.emit('getusersdata', {id:userid,token});
     }
 
      socket.on('usersdata', (data) => {
             //console.log(data.users,data.groups);
-            for (let i = 0; i < data.users.length; i++) {
-                if(data.users[i].user_id!=localStorage.getItem('userid')) {
-                addUsersandGroups(data.users[i],false);
-                }
-            }
+           // for (let i = 0; i < data.users.length; i++) {
+             //   if(data.users[i].user_id!=localStorage.getItem('userid')) {
+               // addUsersandGroups(data.users[i],false);
+                //}
+            //}
             //console.log(data.groups,data.users);
             for (let i = 0; i < data.groups.length; i++) {
                 //console.log(data.groups);
@@ -367,8 +373,9 @@
             d.innerHTML="";
             let userid = localStorage.getItem('userid');
             let isgroup = localStorage.getItem('isgroup');
+            const token = localStorage.getItem('token');
            // console.log(userid, isgroup,receiverid);
-            socket.emit('getcurrentchat', { receiverid, userid,isgroup });
+            socket.emit('getcurrentchat', { receiverid, userid,isgroup,token });
         }
     
         socket.on('currentchat',(data)=>{
@@ -387,7 +394,8 @@
 
         function getlinkstojoin(){
             let userid = localStorage.getItem('userid');
-            socket.emit('getlinkstojoin',userid);
+            const token = localStorage.getItem('token');
+            socket.emit('getlinkstojoin',{userid,token});
         }
 
         getlinkstojoin();
@@ -440,11 +448,13 @@
         function handlejoinClick(button){
             var hiddenInput = button.querySelector('input[name="group_id"]');
             // Get the value of the hidden input element (group_id)
-            var groupId = hiddenInput.value;
+            var groupid = hiddenInput.value;
             let username=button.textContent;
             button.remove();
+
+            const token = localStorage.getItem('token');
             //console.log(groupId);
-            socket.emit('addtogroup',groupId);
+            socket.emit('addtogroup',{groupid,token});
 
             socket.on('okaddgroup',(groupid)=>{
                 let data={username:username,uer_id:groupid}
@@ -473,7 +483,8 @@
 //getallusersdata for hidden-window-form and addind usersdata for hidden-window
     function getallusersdata() {
             let userid = localStorage.getItem('userid');
-            socket.emit('getallusers', userid);
+            const token = localStorage.getItem('token');
+            socket.emit('getallusers', {userid,token});
         }
 
     getallusersdata();
@@ -562,7 +573,8 @@
                 });
 
                 form.reset();
-                socket.emit("creategroup",{groupName,selectedUsers,selectedUserIds});
+                const token = localStorage.getItem('token');
+                socket.emit("creategroup",{groupName,selectedUsers,selectedUserIds,token});
                 socket.on('groupcreated',(data)=>{
                     addUsersandGroups(data, true);
                 

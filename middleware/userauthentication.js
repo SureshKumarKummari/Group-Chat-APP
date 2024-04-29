@@ -23,3 +23,9 @@ exports.authenticate=(req,res,next)=>{
         return res.status(401).json({success:false});
     });
 }
+
+exports.authorize=(token)=>{
+    const user=jwt.verify(token, secretKey);
+   return users.findByPk(user.user_id);
+   
+}

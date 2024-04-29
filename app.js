@@ -28,9 +28,12 @@ const cron = require('node-cron');
 const ArchivedMessage = require('./models/archived_messges');
 
 // Define a cron job to run every night at midnight
+function cronjob(){
+   console.log("In cron JOB!");
 cron.schedule('0 0 * * *', async () => {
     try {
         // Get messages older than 1 day from the Chat table
+        console.log("In cron JOB!");
         const oldMessages = await messages.findAll({
             where: {
                 createdAt: {
@@ -68,7 +71,7 @@ cron.schedule('0 0 * * *', async () => {
     }
 });
 
-
+}
 
 
 
@@ -87,18 +90,21 @@ app.use(express.json());
 app.use(admin);
 app.use(message);
 
+let connectedusers=[];
 
 io.on('connection', (socket) => {
  
  console.log('New client connected', socket.handshake.query.userid);
     // Joining the room based on the user ID
     socket.join(socket.handshake.query.userid);
+    connectedusers.push(socket.handshake.query.userid);
 
-  socket.on('message', async ({ senderid, receiverid, message, isgroup, ismedia, fileName }) => {
+  socket.on('message', async ({ senderid, receiverid, message, isgroup, ismedia, fileName ,token}) => {
     try {
+        await auth.authorize(token);
         // Store the message in the database
         const resultmessage = { message: message, receiverid: receiverid, isgroup: isgroup };
-
+        //console.log(senderid, receiverid, message, isgroup, ismedia, fileName);
         if (!isgroup) {
             if (!ismedia) {
                 const newMessage = await messages.create({
@@ -107,6 +113,7 @@ io.on('connection', (socket) => {
                     content: message
                 });
             } else {
+             // console.log(senderid, receiverid, message, isgroup, ismedia, fileName);
                 const fileUrl = await uploadtoaws.uploadtoS3(message, fileName);
                 await messages.create({
                     fileurl: fileUrl,
@@ -151,8 +158,9 @@ io.on('connection', (socket) => {
 
 
 //sending users and groups info
-  socket.on('getusersdata', async (id) => {
+  socket.on('getusersdata', async ({id,token}) => {
     try {
+        await auth.authorize(token);
         const userData = await users.findAll({
             attributes: ['user_id', 'username']
           });
@@ -186,8 +194,9 @@ io.on('connection', (socket) => {
 
 //getting previous messages
 
-socket.on('getcurrentchat', async ({ receiverid, userid,isgroup }) => {
+socket.on('getcurrentchat', async ({ receiverid, userid,isgroup,token }) => {
     try {
+        await auth.authorize(token);
         // Fetch messages exchanged between the specified users
         let chatMessages;
         //console.log(isgroup);
@@ -224,8 +233,9 @@ socket.on('getcurrentchat', async ({ receiverid, userid,isgroup }) => {
 
 
 //To get all users
-socket.on('getallusers', async (data) => {
+socket.on('getallusers', async ({data,token}) => {
     try {
+        await auth.authorize(token);
         // Fetch all users from the database
         const allUsers = await users.findAll({
             attributes: ['user_id', 'username'] // Select only the user_id and username fields
@@ -241,9 +251,10 @@ socket.on('getallusers', async (data) => {
 
 
 //To get links to join group
-socket.on('getlinkstojoin',async(userid)=>{
+socket.on('getlinkstojoin',async({userid,token})=>{
 
   try {
+      await auth.authorize(token);
         const groupids = await links.findAll({
             attributes: ['group_id'],
             where:{'userid':userid},
@@ -269,8 +280,10 @@ socket.on('getlinkstojoin',async(userid)=>{
 });
 
 
- socket.on('addtogroup',async(groupid)=>{
+ socket.on('addtogroup',async({groupid,token})=>{
   //console.log(groupId);
+  await auth.authorize(token);
+
   let user=socket.handshake.query.userid;
   await group_members.create({userId:user, groupId:groupid});
 
@@ -288,9 +301,10 @@ socket.on('getlinkstojoin',async(userid)=>{
 
 
 
-socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds})=>{
+socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds,token})=>{
  // console.log(connecteduserid,groupName,selectedUsers,selectedUserIds);
  try{
+  await auth.authorize(token);
  let connecteduserid=Number(socket.handshake.query.userid);
   const group = await groups.create({
     name: groupName,
@@ -309,10 +323,19 @@ socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds})=>{
     //const creatinglinks=links.bulkCreate({})
     const selectedUserIdsExcludingConnected = selectedUserIds.filter(id => Number(id) != connecteduserid);
     //console.log(selectedUserIdsExcludingConnected,gid);
-    const createdlinks=await links.bulkCreate(selectedUserIdsExcludingConnected.map(userId => ({
-      userid:Number(userId),
-      group_id: gid
-    })));
+    
+    //For sending invitatons to join group members
+    // const createdlinks=await links.bulkCreate(selectedUserIdsExcludingConnected.map(userId => ({
+    //   userid:Number(userId),
+    //   group_id: gid
+    // })));
+
+    //For adding group members directly to the group
+    const adding_group_members=await group_members.bulkCreate(selectedUserIdsExcludingConnected.map(userId => ({
+       userId:Number(userId),
+       groupId: gid
+     })));
+
     let data={user_id:gid,username:groupName} ;
     socket.emit('groupcreated',(data));
   }
@@ -322,9 +345,9 @@ socket.on("creategroup",async({groupName,selectedUsers,selectedUserIds})=>{
 })
 
 
-socket.on("getgroupmembers",async(groupid)=>{
+socket.on("getgroupmembers",async({groupid,token})=>{
   try{
-
+    await auth.authorize(token);
    // console.log(groupid);
     let all=await group_members.findAll({
                   attributes:['userId'],where:{groupId:groupid}});
@@ -367,9 +390,10 @@ socket.on("getgroupmembers",async(groupid)=>{
 
 
 
-socket.on("removeuser",async({id,group_id})=>{
+socket.on("removeuser",async({id,group_id,token})=>{
 
   try{
+    await auth.authorize(token);
     let user=await group_members.findOne({where:{userId:id,groupId:group_id}});
      if(user){
           user.destroy();
@@ -385,9 +409,11 @@ socket.on("removeuser",async({id,group_id})=>{
 
 
 
-socket.on("makeadmin",async({id,group_id})=>{
+socket.on("makeadmin",async({id,group_id,token})=>{
 
   try{
+    await auth.authorize(token);
+
     let admin=await new_admins.create({group_id:group_id,adminId:id});
     if(admin){
     console.log("Admin created successully");
@@ -404,9 +430,11 @@ socket.on("makeadmin",async({id,group_id})=>{
 
 
 
- socket.on("isadmin",async({userid,groupid})=>{
+ socket.on("isadmin",async({userid,groupid,token})=>{
       try{
-        console.log(groupid,userid);
+        await auth.authorize(token);
+
+       // console.log(groupid,userid);
         let admin=await new_admins.findOne({where:{adminId:userid,group_id:groupid}})
         if(admin){
         socket.emit('okcheck',true);
@@ -435,6 +463,7 @@ const PORT = process.env.PORT ||3000;
 sequelize.sync().then(() => {
   server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    cronjob();
   });
 }).catch(err => {
   console.log(err);
