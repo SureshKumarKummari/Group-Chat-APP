@@ -27,10 +27,9 @@ const message = require('./routes/messages');
 const cron = require('node-cron');
 const ArchivedMessage = require('./models/archived_messges');
 
-// Define a cron job to run every night at midnight
-function cronjob(){
+
+async function cronJobHandler(){
    console.log("In cron JOB!");
-cron.schedule('0 0 * * *', async () => {
     try {
         // Get messages older than 1 day from the Chat table
         console.log("In cron JOB!");
@@ -69,7 +68,6 @@ cron.schedule('0 0 * * *', async () => {
     } catch (error) {
         console.error('Error in cron job:', error);
     }
-});
 
 }
 
@@ -90,6 +88,8 @@ app.use(express.json());
 app.use(admin);
 app.use(message);
 
+cron.schedule("0 0 * * *", cronJobHandler);
+
 let connectedusers=[];
 
 io.on('connection', (socket) => {
@@ -103,7 +103,8 @@ io.on('connection', (socket) => {
     try {
         await auth.authorize(token);
         // Store the message in the database
-        const resultmessage = { message: message, receiverid: receiverid, isgroup: isgroup };
+        //const
+        let resultmessage = { message: message, receiverid: receiverid, isgroup: isgroup,senderid: senderid,isfile:false};
         //console.log(senderid, receiverid, message, isgroup, ismedia, fileName);
         if (!isgroup) {
             if (!ismedia) {
@@ -122,6 +123,8 @@ io.on('connection', (socket) => {
                     receiverId: Number(receiverid),
                     content: "File"
                 });
+                resultmessage.message=fileUrl;
+                resultmessage.isfile=true;
             }
 
             // Emit the message to the receiver's room
@@ -146,9 +149,12 @@ io.on('connection', (socket) => {
                     isGroup: isgroup,
                     Group_id: Number(receiverid)
                 });
+                resultmessage.message=fileUrl;
+                resultmessage.isfile=true;
             }
 
-            socket.broadcast.emit("message", resultmessage);
+            //socket.broadcast.emit("message", resultmessage);
+            io.emit("message", resultmessage);
         }
     } catch (error) {
         console.error('Error storing message:', error);
@@ -460,10 +466,11 @@ new_admins.hasMany(group_members, { foreignKey: 'groupId' });
 // Start the server
 const PORT = process.env.PORT ||3000;
 
+
 sequelize.sync().then(() => {
   server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-    cronjob();
+    //cronjob();
   });
 }).catch(err => {
   console.log(err);

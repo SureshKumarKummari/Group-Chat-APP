@@ -7,7 +7,7 @@ const secretKey = process.env.SECRET_KEY;
 const jwt = require('jsonwebtoken');
 
 exports.token =(id)=>{
-     return jwt.sign({user_id:id}, secretKey, { expiresIn: '1h' });
+     return jwt.sign({user_id:id}, secretKey);//, { expiresIn: 'never' });
 }
 
 exports.authenticate=(req,res,next)=>{

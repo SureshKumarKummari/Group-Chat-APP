@@ -32,7 +32,7 @@
             //p.classList.add('single-msg');
             p.setAttribute('src',fileurl); 
         }else{
-            console.log(fileurl);
+           // console.log(fileurl);
         p = document.createElement('p');
         p.classList.add('single-msg');
         p.textContent = message;
@@ -89,7 +89,7 @@
             //p.classList.add('single-msg');
             p.setAttribute('src',fileurl); 
         }else{
-            console.log(fileurl);
+           // console.log(fileurl);
         p = document.createElement('p');
         p.classList.add('single-msg');
         p.textContent = message;

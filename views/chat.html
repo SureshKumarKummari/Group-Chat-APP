@@ -126,7 +126,7 @@
 
 
          let userid = localStorage.getItem('userid');
-            const socket = io('http://localhost:4000', {
+            const socket = io('http://54.205.21.218:4000', {
                 query: {
                     userid: Number(userid)
                 }
@@ -303,13 +303,12 @@
         let isgroup = localStorage.getItem('isgroup');
         socket.emit('joinRoom', Number(receiverid));
 
-
         const message = document.getElementById('message').value;
 
         const fileInput = document.getElementById('myFile');
-        const file = fileInput.files[0];
+        const file = fileInput.files[0] || null;
         const token=localStorage.getItem('token');
-        if(file){
+        if(file!=null){
         const fileName = file.name;
 
         const reader = new FileReader();
@@ -325,7 +324,7 @@
 
         socket.emit('message', {senderid,receiverid,message,isgroup,ismedia:false,fileName:"null",token});
     }
-        addSentMessage(message);
+        //addSentMessage(message);
     
     }
 
@@ -333,11 +332,24 @@
             //console.log('Received message:', data);
             let crnt = localStorage.getItem('currentreceiverorgroup');
             let isgroup=localStorage.getItem('isgroup');
-            //console.log(data);
-            if (crnt == Number(data.receiverid) && isgroup.toString()==isgroup) {
-                //console.log("hi");
-                //console.log(data,data.message);
-               addreceivedMessage(data.message);//data.fileurl
+    
+            if (crnt == Number(data.receiverid)){ //&& isgroup.toString()==isgroup) {
+                console.log(data.senderid, data.receiverid);
+               if(data.senderid==localStorage.getItem('userid')){
+                    console.log(data.senderid,data.receiverid);
+                    if(data.isfile){
+                    addSentMessage(data.message, data.message);
+                    }else{
+                        addSentMessage(data.message,"null");
+                    }
+               }else{
+                console.log(data.senderid, data.receiverid);
+                if(data.isfile){
+                    addreceivedMessage(data.message,data.message);
+                }else{
+                    addreceivedMessage(data.message, "null");
+                }
+               }
             }
         });
 
