@@ -10,6 +10,8 @@ const group_members = require('./models/group_members');
 const links=require('./models/links');
 const new_admins=require('./models/new_admins');
 
+const path=require('path')
+
 const auth=require('./middleware/userauthentication');
 
 const uploadtoaws=require('./util/uploadingtoaws');
@@ -87,6 +89,12 @@ const io = socketIO(server, {
 app.use(express.json());
 app.use(admin);
 app.use(message);
+
+app.use(express.static(path.join(__dirname,'public')));
+
+app.get('/',(req,res)=>{
+   res.sendFile(path.join(__dirname,'views','signup.html'));
+});
 
 cron.schedule("0 0 * * *", cronJobHandler);
 
